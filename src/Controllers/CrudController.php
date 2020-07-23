@@ -2,7 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
-use Illuminate\Support\Collection;
+use OZiTAG\Tager\Backend\Core\Controllers\Controller;
 
 abstract class CrudController extends Controller
 {
