@@ -2,7 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
-use OZiTAG\Tager\Backend\Core\Controllers\Controller;
+use Illuminate\Support\Collection;
 
 abstract class CrudController extends Controller
 {
@@ -19,13 +19,36 @@ abstract class CrudController extends Controller
     {
         $features = $this->features();
 
+        $feature = null;
+
         if (isset($features[$index])) {
-            return $this->serve($features[$index], $params);
+            $feature = $features[$index];
         } else if (isset($features[$key])) {
-            return $this->serve($features[$key], $params);
+            $feature = $features[$key];
         }
 
-        throw new \Exception('Feature not found');
+        if (!$feature) {
+            throw new \Exception('Feature not found');
+        }
+
+        if (is_string($feature)) {
+            return $this->serve($feature, $params);
+        } else if (is_array($feature)) {
+            $featureName = array_shift($feature);
+
+            $reflection = new \ReflectionClass($featureName);
+            $constructorParams = $reflection->getConstructor()->getParameters();
+
+            $featureParams = $params;
+            foreach ($constructorParams as $ind => $param) {
+                if ($ind < count($params)) continue;
+                $featureParams[$param->getName()] = $feature[$ind - count($params)];
+            }
+
+            return $this->serve($featureName, $featureParams);
+        } else {
+            return $this->dispatchNow($feature);
+        }
     }
 
     protected function index()
