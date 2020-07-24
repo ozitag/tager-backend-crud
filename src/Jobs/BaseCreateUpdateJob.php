@@ -2,8 +2,6 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Jobs;
 
-use App\Enums\FileScenario;
-use App\Http\Requests\Admin\PartnerRequest;
 use Illuminate\Database\Eloquent\Model;
 use Ozerich\FileStorage\Storage;
 use OZiTAG\Tager\Backend\Core\Http\FormRequest;

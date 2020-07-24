@@ -2,8 +2,6 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Jobs;
 
-use OZiTAG\Tager\Backend\Core\Jobs\Job;
-
 class UpdateJob extends BaseCreateUpdateJob
 {
     public function process()

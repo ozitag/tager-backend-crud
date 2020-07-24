@@ -2,11 +2,6 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Jobs;
 
-use App\Enums\FileScenario;
-use App\Http\Requests\Admin\PartnerRequest;
-use App\Models\Partner;
-use OZiTAG\Tager\Backend\Core\Jobs\Job;
-
 class StoreJob extends BaseCreateUpdateJob
 {
     /**

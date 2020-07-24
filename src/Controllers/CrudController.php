@@ -15,6 +15,8 @@ use OZiTAG\Tager\Backend\Crud\Jobs\UpdateJob;
 
 class CrudController extends Controller
 {
+    protected $hasIndexAction = true;
+
     protected $hasViewAction = true;
 
     protected $hasStoreAction = true;
@@ -29,15 +31,11 @@ class CrudController extends Controller
 
     private $getModelJobClass;
 
-
     private $createRequestClass;
 
     private $createModelJobClass;
 
     private $createModelDefaultJobParams;
-
-    private $createDefaultJobParams;
-
 
     private $updateRequestClass;
 
@@ -109,12 +107,14 @@ class CrudController extends Controller
     {
         $result = [];
 
-        $result['index'] = [
-            ListFeature::class,
-            $this->repository,
-            $this->shortResourceClass,
-            $this->shortResourceFields
-        ];
+        if ($this->hasIndexAction) {
+            $result['index'] = [
+                ListFeature::class,
+                $this->repository,
+                $this->shortResourceClass,
+                $this->shortResourceFields
+            ];
+        }
 
         if ($this->hasViewAction) {
             $result['view'] = [
@@ -147,9 +147,7 @@ class CrudController extends Controller
 
             if (!$this->createModelJobClass) {
                 if ($this->createModelDefaultJobParams) {
-                    StoreJob::setConfig(array_merge($this->createModelDefaultJobParams, [
-                        'hasPriority' => $this->hasMoveAction
-                    ]));
+                    StoreJob::setConfig($this->createModelDefaultJobParams);
                     $jobClass = StoreJob::class;
                 }
             } else {
