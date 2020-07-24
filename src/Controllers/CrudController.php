@@ -39,7 +39,11 @@ class CrudController extends Controller
 
     private $shortResourceClass;
 
+    private $shortResourceFields;
+
     private $fullResourceClass;
+
+    private $fullResourceFields;
 
     public function __construct(EloquentRepository $repository, $getModelJobClass = null, $createModelJobClass = null, $createRequestClass = null, $updateModelJobClass = null, $updateRequestClass = null, $deleteModelJobClass = null, $shortResourceClass = null, $fullResourceClass = null)
     {
@@ -61,6 +65,16 @@ class CrudController extends Controller
         $this->fullResourceClass = $fullResourceClass;
     }
 
+    protected function setResourceFields($fields)
+    {
+        $this->shortResourceFields = $fields;
+    }
+
+    protected function setFullResourceFields($fields)
+    {
+        $this->fullResourceFields = $fields;
+    }
+
     protected function setStoreAction($createRequestClass = null, $createModelJobClass = null)
     {
         $this->createRequestClass = $createRequestClass;
@@ -80,7 +94,8 @@ class CrudController extends Controller
         $result['index'] = [
             ListFeature::class,
             $this->repository,
-            $this->shortResourceClass
+            $this->shortResourceClass,
+            $this->shortResourceFields
         ];
 
         if ($this->hasViewAction) {
@@ -88,7 +103,8 @@ class CrudController extends Controller
                 ViewFeature::class,
                 $this->getModelJobClass,
                 $this->repository,
-                $this->fullResourceClass
+                $this->fullResourceClass,
+                $this->fullResourceFields,
             ];
         }
 
@@ -114,7 +130,8 @@ class CrudController extends Controller
                 StoreFeature::class,
                 $this->createRequestClass,
                 $this->createModelJobClass,
-                $this->fullResourceClass
+                $this->fullResourceClass,
+                $this->fullResourceFields
             ];
         }
 
@@ -125,7 +142,8 @@ class CrudController extends Controller
                 $this->repository,
                 $this->updateRequestClass,
                 $this->updateModelJobClass,
-                $this->fullResourceClass
+                $this->fullResourceClass,
+                $this->fullResourceFields,
             ];
         }
 
