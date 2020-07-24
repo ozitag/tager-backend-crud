@@ -4,10 +4,12 @@ namespace OZiTAG\Tager\Backend\Crud\Jobs;
 
 class StoreJob extends BaseCreateUpdateJob
 {
+    protected static $config = [];
+
     /**
      * @return bool
      */
-    private function hasPriority()
+    protected function hasPriority()
     {
         return isset(self::$config['hasPriority']) && self::$config['hasPriority'];
     }

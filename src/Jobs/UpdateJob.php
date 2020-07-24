@@ -4,6 +4,8 @@ namespace OZiTAG\Tager\Backend\Crud\Jobs;
 
 class UpdateJob extends BaseCreateUpdateJob
 {
+    protected static $config = [];
+
     public function process()
     {
         foreach ($this->fields() as $field => $requestField) {

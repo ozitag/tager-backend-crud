@@ -147,7 +147,9 @@ class CrudController extends Controller
 
             if (!$this->createModelJobClass) {
                 if ($this->createModelDefaultJobParams) {
-                    StoreJob::setConfig($this->createModelDefaultJobParams);
+                    StoreJob::setConfig(array_merge($this->createModelDefaultJobParams, [
+                        'hasPriority' => $this->hasMoveAction
+                    ]));
                     $jobClass = StoreJob::class;
                 }
             } else {

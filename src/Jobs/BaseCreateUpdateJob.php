@@ -16,7 +16,7 @@ abstract class BaseCreateUpdateJob extends Job
 
     public static function setConfig($config)
     {
-        self::$config = $config;
+        static::$config = $config;
     }
 
     /**
@@ -24,8 +24,8 @@ abstract class BaseCreateUpdateJob extends Job
      */
     protected function repository()
     {
-        if (isset(self::$config['repository'])) {
-            return self::$config['repository'];
+        if (isset(static::$config['repository'])) {
+            return static::$config['repository'];
         } else {
             throw new \Exception('Repository not found');
         }
@@ -36,8 +36,8 @@ abstract class BaseCreateUpdateJob extends Job
      */
     protected function fields()
     {
-        if (isset(self::$config['fields'])) {
-            $fields = self::$config['fields'];
+        if (isset(static::$config['fields'])) {
+            $fields = static::$config['fields'];
 
             $result = [];
             foreach ($fields as $field => $requestField) {
@@ -57,8 +57,8 @@ abstract class BaseCreateUpdateJob extends Job
      */
     protected function fileScenarios()
     {
-        if (isset(self::$config['fileScenarios'])) {
-            return self::$config['fileScenarios'];
+        if (isset(static::$config['fileScenarios'])) {
+            return static::$config['fileScenarios'];
         } else {
             return [];
         }
