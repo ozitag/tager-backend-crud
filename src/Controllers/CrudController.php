@@ -10,6 +10,8 @@ use OZiTAG\Tager\Backend\Crud\Features\MoveFeature;
 use OZiTAG\Tager\Backend\Crud\Features\StoreFeature;
 use OZiTAG\Tager\Backend\Crud\Features\UpdateFeature;
 use OZiTAG\Tager\Backend\Crud\Features\ViewFeature;
+use OZiTAG\Tager\Backend\Crud\Jobs\StoreJob;
+use OZiTAG\Tager\Backend\Crud\Jobs\UpdateJob;
 
 class CrudController extends Controller
 {
@@ -27,13 +29,21 @@ class CrudController extends Controller
 
     private $getModelJobClass;
 
-    private $createModelJobClass;
 
     private $createRequestClass;
 
-    private $updateModelJobClass;
+    private $createModelJobClass;
+
+    private $createModelDefaultJobParams;
+
+    private $createDefaultJobParams;
+
 
     private $updateRequestClass;
+
+    private $updateModelJobClass;
+
+    private $updateModelDefaultJobParams;
 
     private $deleteModelJobClass;
 
@@ -75,16 +85,24 @@ class CrudController extends Controller
         $this->fullResourceFields = $fields;
     }
 
-    protected function setStoreAction($createRequestClass = null, $createModelJobClass = null)
+    protected function setStoreAction($createRequestClass = null, $createModelJobClass = null, $defaultCreateModelJobParams = [])
     {
         $this->createRequestClass = $createRequestClass;
         $this->createModelJobClass = $createModelJobClass;
+        $this->createModelDefaultJobParams = $defaultCreateModelJobParams;
     }
 
-    protected function setUpdateAction($updateRequestClass = null, $updateModelJobClass = null)
+    protected function setUpdateAction($updateRequestClass = null, $updateModelJobClass = null, $defaultUpdateModelJobParams = [])
     {
         $this->updateRequestClass = $updateRequestClass;
         $this->updateModelJobClass = $updateModelJobClass;
+        $this->updateModelDefaultJobParams = $defaultUpdateModelJobParams;
+    }
+
+    protected function setStoreAndUpdateAction($requestClass, $defaultModelJobParams)
+    {
+        $this->setStoreAction($requestClass, null, $defaultModelJobParams);
+        $this->setUpdateAction($requestClass, null, $defaultModelJobParams);
     }
 
     public function features()
@@ -126,22 +144,42 @@ class CrudController extends Controller
         }
 
         if ($this->hasStoreAction) {
+
+            if (!$this->createModelJobClass) {
+                if ($this->createModelDefaultJobParams) {
+                    StoreJob::setConfig($this->createModelDefaultJobParams);
+                    $jobClass = StoreJob::class;
+                }
+            } else {
+                $jobClass = $this->createModelJobClass;
+            }
+
             $result['store'] = [
                 StoreFeature::class,
                 $this->createRequestClass,
-                $this->createModelJobClass,
+                $jobClass,
                 $this->fullResourceClass,
                 $this->fullResourceFields
             ];
         }
 
         if ($this->hasUpdateAction) {
+
+            if (!$this->updateModelJobClass) {
+                if ($this->updateModelDefaultJobParams) {
+                    UpdateJob::setConfig($this->updateModelDefaultJobParams);
+                    $jobClass = UpdateJob::class;
+                }
+            } else {
+                $jobClass = $this->updateModelJobClass;
+            }
+
             $result['update'] = [
                 UpdateFeature::class,
                 $this->getModelJobClass,
                 $this->repository,
                 $this->updateRequestClass,
-                $this->updateModelJobClass,
+                $jobClass,
                 $this->fullResourceClass,
                 $this->fullResourceFields,
             ];
