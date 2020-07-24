@@ -2,12 +2,6 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
-use App\Http\Requests\Admin\CompletedProjects\CompletedProjectRequest;
-use App\Http\Resources\Admin\CompletedProjectFullResource;
-use App\Jobs\Sync\CompletedProject\CreateCompletedProjectJob;
-use App\Jobs\Sync\CompletedProject\DeleteCompletedProjectJob;
-use App\Jobs\Sync\CompletedProject\GetCompletedProjectByIdJob;
-use App\Jobs\Sync\CompletedProject\UpdateCompletedProjectJob;
 use OZiTAG\Tager\Backend\Core\Controllers\Controller;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Crud\Features\DeleteFeature;
@@ -19,12 +13,15 @@ use OZiTAG\Tager\Backend\Crud\Features\ViewFeature;
 
 class CrudController extends Controller
 {
-    const INDEX = 'index';
-    const STORE = 'store';
-    const VIEW = 'view';
-    const UPDATE = 'update';
-    const DELETE = 'delete';
-    const MOVE = 'move';
+    protected $hasViewAction = true;
+
+    protected $hasStoreAction = true;
+
+    protected $hasUpdateAction = true;
+
+    protected $hasDeleteAction = true;
+
+    protected $hasMoveAction = false;
 
     private $repository;
 
@@ -58,79 +55,110 @@ class CrudController extends Controller
         $this->fullResourceClass = $fullResourceClass;
     }
 
+    protected function setResourceClasses($shortResourceClass = null, $fullResourceClass = null)
+    {
+        $this->shortResourceClass = $shortResourceClass;
+        $this->fullResourceClass = $fullResourceClass;
+    }
+
+    protected function setStoreAction($createRequestClass = null, $createModelJobClass = null)
+    {
+        $this->createRequestClass = $createRequestClass;
+        $this->createModelJobClass = $createModelJobClass;
+    }
+
+    protected function setUpdateAction($updateRequestClass = null, $updateModelJobClass = null)
+    {
+        $this->updateRequestClass = $updateRequestClass;
+        $this->updateModelJobClass = $updateModelJobClass;
+    }
+
     public function features()
     {
-        return [
-            self::INDEX => [
-                ListFeature::class,
-                $this->repository,
-                $this->shortResourceClass
-            ],
+        $result = [];
 
-            self::VIEW => [
+        $result['index'] = [
+            ListFeature::class,
+            $this->repository,
+            $this->shortResourceClass
+        ];
+
+        if ($this->hasViewAction) {
+            $result['view'] = [
                 ViewFeature::class,
                 $this->getModelJobClass,
+                $this->repository,
                 $this->fullResourceClass
-            ],
+            ];
+        }
 
-            self::DELETE => [
+        if ($this->hasDeleteAction) {
+            $result['delete'] = [
                 DeleteFeature::class,
                 $this->getModelJobClass,
+                $this->repository,
                 $this->deleteModelJobClass
-            ],
+            ];
+        }
 
-            self::MOVE => [
+        if ($this->hasMoveAction) {
+            $result['move'] = [
                 MoveFeature::class,
                 $this->getModelJobClass,
                 $this->repository,
-            ],
+            ];
+        }
 
-            self::STORE => [
+        if ($this->hasStoreAction) {
+            $result['store'] = [
                 StoreFeature::class,
                 $this->createRequestClass,
                 $this->createModelJobClass,
                 $this->fullResourceClass
-            ],
+            ];
+        }
 
-            self::UPDATE => [
+        if ($this->hasUpdateAction) {
+            $result['update'] = [
                 UpdateFeature::class,
                 $this->getModelJobClass,
+                $this->repository,
                 $this->updateRequestClass,
                 $this->updateModelJobClass,
                 $this->fullResourceClass
-            ],
-        ];
+            ];
+        }
+
+        return $result;
     }
 
     protected function index()
     {
-        return $this->serve(self::INDEX);
+        return $this->serve('index');
     }
 
     protected function store()
     {
-        return $this->serve(self::STORE);
+        return $this->serve('store');
     }
 
     public function view($id)
     {
-        return $this->serve(self::VIEW, ['id' => $id]);
+        return $this->serve('view', ['id' => $id]);
     }
 
     protected function update($id)
     {
-        return $this->serve(self::UPDATE, ['id' => $id]);
+        return $this->serve('update', ['id' => $id]);
     }
 
     public function delete($id)
     {
-        return $this->serve(self::DELETE, ['id' => $id]);
+        return $this->serve('delete', ['id' => $id]);
     }
 
     public function move($id, $direction)
     {
-        return $this->serve(self::MOVE, ['id' => $id, 'direction' => $direction]);
+        return $this->serve('move', ['id' => $id, 'direction' => $direction]);
     }
-
-
 }

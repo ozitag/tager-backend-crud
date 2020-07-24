@@ -14,7 +14,7 @@ class MoveFeature extends ModelFeature
 
     public function __construct($id, $direction, $jobGetByIdClass, EloquentRepository $repository)
     {
-        parent::__construct($id, $jobGetByIdClass);
+        parent::__construct($id, $jobGetByIdClass, $repository);
 
         $this->direction = $direction;
         $this->repository = $repository;

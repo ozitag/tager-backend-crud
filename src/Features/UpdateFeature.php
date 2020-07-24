@@ -4,6 +4,7 @@ namespace OZiTAG\Tager\Backend\Crud\Features;
 
 use Illuminate\Support\Facades\App;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
+use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 
 class UpdateFeature extends ModelFeature
 {
@@ -13,9 +14,9 @@ class UpdateFeature extends ModelFeature
 
     private $resourceClass;
 
-    public function __construct($id, $getByidJobClass, $requestClass, $jobClass, $resourceClass)
+    public function __construct($id, $getByidJobClass, EloquentRepository $repository, $requestClass, $jobClass, $resourceClass)
     {
-        parent::__construct($id, $getByidJobClass);
+        parent::__construct($id, $getByidJobClass, $repository);
 
         $this->requestClass = $requestClass;
         $this->jobClass = $jobClass;

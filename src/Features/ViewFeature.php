@@ -8,9 +8,9 @@ class ViewFeature extends ModelFeature
 {
     private $resourceClass;
 
-    public function __construct($id, $jobGetByIdClass, $resourceClass)
+    public function __construct($id, $jobGetByIdClass, $repository, $resourceClass)
     {
-        parent::__construct($id, $jobGetByIdClass);
+        parent::__construct($id, $jobGetByIdClass, $repository);
         $this->resourceClass = $resourceClass;
     }
 
