@@ -9,6 +9,14 @@ use OZiTAG\Tager\Backend\Core\Jobs\Job;
 
 class StoreJob extends BaseCreateUpdateJob
 {
+    /**
+     * @return bool
+     */
+    private function hasPriority()
+    {
+        return isset(self::$config['hasPriority']) && self::$config['hasPriority'];
+    }
+
     public function process()
     {
         $data = [];
@@ -16,8 +24,10 @@ class StoreJob extends BaseCreateUpdateJob
             $data[$field] = $this->request->{$requestField};
         }
 
-        $maxPriorityItem = $this->repository()->findItemWithMaxPriority();
-        $data['priority'] = $maxPriorityItem ? $maxPriorityItem->priority + 1 : 1;
+        if ($this->hasPriority()) {
+            $maxPriorityItem = $this->repository()->findItemWithMaxPriority();
+            $data['priority'] = $maxPriorityItem ? $maxPriorityItem->priority + 1 : 1;
+        }
 
         return $this->repository()->fillAndSave($data);
     }
