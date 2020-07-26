@@ -1,22 +1,23 @@
 {
-  "name": "ozitag/tager-backend-crud",
-  "description": "CRUD",
-  "license": "MIT",
-  "homepage": "https://github.com/ozitag/tager-backend-mail",
-  "authors": [
-    {
-      "name": "Vital Ozierski <v.ozierski@ozitag.com>",
-      "email": "v.ozierski@ozitag.com",
-      "homepage": "https://ozitag.com",
-      "role": "Developer"
+    "name": "ozitag/tager-backend-crud",
+    "description": "CRUD",
+    "license": "MIT",
+    "homepage": "https://github.com/ozitag/tager-backend-mail",
+    "authors": [
+        {
+            "name": "Vital Ozierski <v.ozierski@ozitag.com>",
+            "email": "v.ozierski@ozitag.com",
+            "homepage": "https://ozitag.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "ozitag/tager-backend-core": "^1.2.2",
+        "ozitag/tager-backend-http-cache": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "OZiTAG\\Tager\\Backend\\Crud\\": "src"
+        }
     }
-  ],
-  "require": {
-    "ozitag/tager-backend-core": "^1.2.2"
-  },
-  "autoload": {
-    "psr-4": {
-      "OZiTAG\\Tager\\Backend\\Crud\\": "src"
-    }
-  }
 }

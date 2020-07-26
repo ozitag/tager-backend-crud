@@ -53,18 +53,17 @@ class CrudController extends Controller
 
     private $fullResourceFields;
 
-    public function __construct(EloquentRepository $repository, $getModelJobClass = null, $createModelJobClass = null, $createRequestClass = null, $updateModelJobClass = null, $updateRequestClass = null, $deleteModelJobClass = null, $shortResourceClass = null, $fullResourceClass = null)
+    private $cacheNamespace;
+
+    public function __construct(EloquentRepository $repository, $getModelJobClass = null)
     {
         $this->repository = $repository;
-
         $this->getModelJobClass = $getModelJobClass;
-        $this->createModelJobClass = $createModelJobClass;
-        $this->createRequestClass = $createRequestClass;
-        $this->updateModelJobClass = $updateModelJobClass;
-        $this->updateRequestClass = $updateRequestClass;
-        $this->deleteModelJobClass = $deleteModelJobClass;
-        $this->shortResourceClass = $shortResourceClass;
-        $this->fullResourceClass = $fullResourceClass;
+    }
+
+    public function setCacheNamespace($namespace)
+    {
+        $this->cacheNamespace = $namespace;
     }
 
     protected function setResourceClasses($shortResourceClass = null, $fullResourceClass = null)
@@ -131,7 +130,8 @@ class CrudController extends Controller
                 DeleteFeature::class,
                 $this->getModelJobClass,
                 $this->repository,
-                $this->deleteModelJobClass
+                $this->deleteModelJobClass,
+                $this->cacheNamespace
             ];
         }
 
@@ -140,6 +140,7 @@ class CrudController extends Controller
                 MoveFeature::class,
                 $this->getModelJobClass,
                 $this->repository,
+                $this->cacheNamespace
             ];
         }
 
@@ -161,7 +162,8 @@ class CrudController extends Controller
                 $this->createRequestClass,
                 $jobClass,
                 $this->fullResourceClass,
-                $this->fullResourceFields
+                $this->fullResourceFields,
+                $this->cacheNamespace
             ];
         }
 
@@ -184,6 +186,7 @@ class CrudController extends Controller
                 $jobClass,
                 $this->fullResourceClass,
                 $this->fullResourceFields,
+                $this->cacheNamespace
             ];
         }
 

@@ -4,7 +4,9 @@ namespace OZiTAG\Tager\Backend\Crud\Features;
 
 use Illuminate\Support\Facades\App;
 use OZiTAG\Tager\Backend\Core\Features\Feature;
+use OZiTAG\Tager\Backend\Crud\Events\ModelChanged;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
+use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 
 class StoreFeature extends Feature
 {
@@ -16,19 +18,26 @@ class StoreFeature extends Feature
 
     private $resourceFields;
 
-    public function __construct($requestClass, $jobClass, $resourceClass, $resourceFields)
+    private $cacheNamespace;
+
+    public function __construct($requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace)
     {
         $this->requestClass = $requestClass;
         $this->jobClass = $jobClass;
         $this->resourceClass = $resourceClass;
         $this->resourceFields = $resourceFields;
+        $this->cacheNamespace = $cacheNamespace;
     }
 
-    public function handle()
+    public function handle(HttpCache $httpCache)
     {
         $request = App::make($this->requestClass);
 
         $model = $this->run($this->jobClass, ['request' => $request]);
+
+        if ($this->cacheNamespace) {
+            $httpCache->clear($this->cacheNamespace);
+        }
 
         if (!empty($this->resourceClass)) {
             $resourceClass = $this->resourceClass;

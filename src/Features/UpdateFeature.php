@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\App;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
+use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 
 class UpdateFeature extends ModelFeature
 {
@@ -17,7 +18,9 @@ class UpdateFeature extends ModelFeature
 
     private $resourceFields;
 
-    public function __construct($id, $getByidJobClass, EloquentRepository $repository, $requestClass, $jobClass, $resourceClass, $resourceFields)
+    private $cacheNamespace;
+
+    public function __construct($id, $getByidJobClass, EloquentRepository $repository, $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace)
     {
         parent::__construct($id, $getByidJobClass, $repository);
 
@@ -25,9 +28,10 @@ class UpdateFeature extends ModelFeature
         $this->jobClass = $jobClass;
         $this->resourceClass = $resourceClass;
         $this->resourceFields = $resourceFields;
+        $this->cacheNamespace = $cacheNamespace;
     }
 
-    public function handle()
+    public function handle(HttpCache $httpCache)
     {
         $request = App::make($this->requestClass);
 
@@ -36,6 +40,10 @@ class UpdateFeature extends ModelFeature
             'request' => $request,
         ]);
 
+        if ($this->cacheNamespace) {
+            $httpCache->clear($this->cacheNamespace);
+        }
+        
         if (!empty($this->resourceClass)) {
             $resourceClass = $this->resourceClass;
             return new $resourceClass($model);
