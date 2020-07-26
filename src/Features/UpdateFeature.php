@@ -5,6 +5,7 @@ namespace OZiTAG\Tager\Backend\Crud\Features;
 use Illuminate\Support\Facades\App;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
+use OZiTAG\Tager\Backend\Crud\Jobs\ProcessFilesJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
 use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 
@@ -34,6 +35,8 @@ class UpdateFeature extends ModelFeature
     public function handle(HttpCache $httpCache)
     {
         $request = App::make($this->requestClass);
+        
+        $this->run(ProcessFilesJob::class, ['request' => $request]);
 
         $model = $this->run($this->jobClass, [
             'model' => $this->model(),
@@ -43,7 +46,7 @@ class UpdateFeature extends ModelFeature
         if ($this->cacheNamespace) {
             $httpCache->clear($this->cacheNamespace);
         }
-        
+
         if (!empty($this->resourceClass)) {
             $resourceClass = $this->resourceClass;
             return new $resourceClass($model);

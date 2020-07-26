@@ -5,6 +5,7 @@ namespace OZiTAG\Tager\Backend\Crud\Features;
 use Illuminate\Support\Facades\App;
 use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Crud\Events\ModelChanged;
+use OZiTAG\Tager\Backend\Crud\Jobs\ProcessFilesJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
 use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 
@@ -33,6 +34,8 @@ class StoreFeature extends Feature
     {
         $request = App::make($this->requestClass);
 
+        $this->run(ProcessFilesJob::class, ['request' => $request]);
+        
         $model = $this->run($this->jobClass, ['request' => $request]);
 
         if ($this->cacheNamespace) {
