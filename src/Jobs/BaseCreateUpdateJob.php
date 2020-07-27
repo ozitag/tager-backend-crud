@@ -10,8 +10,6 @@ use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 
 abstract class BaseCreateUpdateJob extends Job
 {
-    abstract function process();
-
     protected static $config = [];
 
     public static function setConfig($config)
@@ -53,18 +51,6 @@ abstract class BaseCreateUpdateJob extends Job
     }
 
     /**
-     * @return array
-     */
-    protected function fileScenarios()
-    {
-        if (isset(static::$config['fileScenarios'])) {
-            return static::$config['fileScenarios'];
-        } else {
-            return [];
-        }
-    }
-
-    /**
      * @var FormRequest
      */
     protected $request;
@@ -73,11 +59,6 @@ abstract class BaseCreateUpdateJob extends Job
      * @var Model
      */
     protected $model;
-
-    /**
-     * @var Storage
-     */
-    protected $fileStorage;
 
     public function __construct(FormRequest $request, $model = null)
     {
