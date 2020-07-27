@@ -85,15 +85,4 @@ abstract class BaseCreateUpdateJob extends Job
 
         $this->model = $model;
     }
-
-    public function handle(Storage $fileStorage)
-    {
-        foreach ($this->fileScenarios() as $fileField => $fileScenario) {
-            if ($this->request->{$fileField}) {
-                $fileStorage->setFileScenario($this->request->{$fileField}, $fileScenario);
-            }
-        }
-
-        return $this->process();
-    }
 }

@@ -6,7 +6,7 @@ class UpdateJob extends BaseCreateUpdateJob
 {
     protected static $config = [];
 
-    public function process()
+    public function handle()
     {
         foreach ($this->fields() as $field => $requestField) {
             $this->model->{$field} = $this->request->{$requestField};

@@ -14,7 +14,7 @@ class StoreJob extends BaseCreateUpdateJob
         return isset(self::$config['hasPriority']) && self::$config['hasPriority'];
     }
 
-    public function process()
+    public function handle()
     {
         $data = [];
         foreach ($this->fields() as $field => $requestField) {
