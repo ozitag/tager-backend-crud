@@ -145,14 +145,13 @@ class CrudController extends Controller
         }
 
         if ($this->hasStoreAction) {
-
             if (!$this->createModelJobClass) {
                 if ($this->createModelDefaultJobParams) {
                     StoreJob::setConfig(array_merge($this->createModelDefaultJobParams, [
                         'hasPriority' => $this->hasMoveAction
                     ]));
-                    $jobClass = StoreJob::class;
                 }
+                $jobClass = StoreJob::class;
             } else {
                 $jobClass = $this->createModelJobClass;
             }
@@ -168,12 +167,11 @@ class CrudController extends Controller
         }
 
         if ($this->hasUpdateAction) {
-
             if (!$this->updateModelJobClass) {
                 if ($this->updateModelDefaultJobParams) {
                     UpdateJob::setConfig($this->updateModelDefaultJobParams);
-                    $jobClass = UpdateJob::class;
                 }
+                $jobClass = UpdateJob::class;
             } else {
                 $jobClass = $this->updateModelJobClass;
             }
