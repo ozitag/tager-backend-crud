@@ -34,8 +34,10 @@ class StoreFeature extends Feature
     {
         $request = App::make($this->requestClass);
 
-        $this->run(ProcessFilesJob::class, ['request' => $request]);
-        
+        if (!empty($request->fileScenarios())) {
+            $this->run(ProcessFilesJob::class, ['request' => $request]);
+        }
+
         $model = $this->run($this->jobClass, ['request' => $request]);
 
         if ($this->cacheNamespace) {
