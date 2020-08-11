@@ -28,19 +28,27 @@ class MoveFeature extends ModelFeature
     {
         $model = $this->model();
 
-        if ($this->direction == 'up') {
-            $other = $this->repository->findFirstWithLowerPriorityThan($model->priority);
+        if (method_exists($model, 'up') && method_exists($model, 'down')) {
+            if ($this->direction == 'up') {
+                $model->up();
+            } else {
+                $model->down();
+            }
         } else {
-            $other = $this->repository->findFirstWithHigherPriorityThan($model->priority);
-        }
+            if ($this->direction == 'up') {
+                $other = $this->repository->findFirstWithLowerPriorityThan($model->priority);
+            } else {
+                $other = $this->repository->findFirstWithHigherPriorityThan($model->priority);
+            }
 
-        if ($other) {
-            $a = $other->priority;
-            $other->priority = $model->priority;
-            $model->priority = $a;
+            if ($other) {
+                $a = $other->priority;
+                $other->priority = $model->priority;
+                $model->priority = $a;
 
-            $model->save();
-            $other->save();
+                $model->save();
+                $other->save();
+            }
         }
 
         if ($this->cacheNamespace) {
