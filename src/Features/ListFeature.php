@@ -16,6 +16,8 @@ class ListFeature extends Feature
 
     private $resourceFields;
 
+    private $isTree;
+
     public function __construct(EloquentRepository $repository, $resourceClassName, $resourceFields, $isTree)
     {
         $this->repository = $repository;

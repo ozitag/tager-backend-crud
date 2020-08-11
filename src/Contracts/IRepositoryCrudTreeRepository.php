@@ -2,7 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Contracts;
 
-interface IRepositoryCrudTree
+interface IRepositoryCrudTreeRepository
 {
     public function toFlatTree();
 }
