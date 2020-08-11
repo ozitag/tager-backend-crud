@@ -4,9 +4,8 @@ namespace OZiTAG\Tager\Backend\Crud\Features;
 
 use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
+use OZiTAG\Tager\Backend\Crud\Contracts\IRepositoryCrudTree;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
-use OZiTAG\Tager\Backend\Pages\Models\TagerPage;
-use OZiTAG\Tager\Backend\Pages\Resources\AdminPageResource;
 
 class ListFeature extends Feature
 {

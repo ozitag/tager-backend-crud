@@ -56,6 +56,8 @@ class CrudController extends Controller
     private $fullResourceFields;
 
     private $cacheNamespace;
+    
+    private $checkIfCanDeleteJobClass;
 
     public function __construct(EloquentRepository $repository, $getModelJobClass = null)
     {
@@ -71,6 +73,11 @@ class CrudController extends Controller
     public function setIndexAction($isTree)
     {
         $this->indexActionIsTree = $isTree;
+    }
+
+    public function setDeleteAction($checkIfCanDeleteJobClass = null)
+    {
+        $this->checkIfCanDeleteJobClass = $checkIfCanDeleteJobClass;
     }
 
     protected function setResourceClasses($shortResourceClass = null, $fullResourceClass = null)
@@ -138,6 +145,7 @@ class CrudController extends Controller
                 DeleteFeature::class,
                 $this->getModelJobClass,
                 $this->repository,
+                $this->checkIfCanDeleteJobClass,
                 $this->deleteModelJobClass,
                 $this->cacheNamespace
             ];
