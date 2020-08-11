@@ -29,6 +29,8 @@ class CrudController extends Controller
 
     private $repository;
 
+    private $indexActionIsTree = false;
+
     private $getModelJobClass;
 
     private $createRequestClass;
@@ -64,6 +66,11 @@ class CrudController extends Controller
     public function setCacheNamespace($namespace)
     {
         $this->cacheNamespace = $namespace;
+    }
+
+    public function setIndexAction($isTree)
+    {
+        $this->indexActionIsTree = $isTree;
     }
 
     protected function setResourceClasses($shortResourceClass = null, $fullResourceClass = null)
@@ -111,7 +118,8 @@ class CrudController extends Controller
                 ListFeature::class,
                 $this->repository,
                 $this->shortResourceClass,
-                $this->shortResourceFields
+                $this->shortResourceFields,
+                $this->indexActionIsTree
             ];
         }
 
