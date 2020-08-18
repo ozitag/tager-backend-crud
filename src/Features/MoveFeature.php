@@ -5,6 +5,8 @@ namespace OZiTAG\Tager\Backend\Crud\Features;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Core\Resources\SuccessResource;
+use OZiTAG\Tager\Backend\Crud\Contracts\IModelPriorityConditional;
+use OZiTAG\Tager\Backend\Crud\Contracts\IRepositoryWithPriorityMethods;
 use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 
 class MoveFeature extends ModelFeature
@@ -35,10 +37,29 @@ class MoveFeature extends ModelFeature
                 $model->down();
             }
         } else {
+
+            if ($this->repository instanceof IRepositoryWithPriorityMethods == false) {
+                throw new \Exception('Repository must implements IRepositoryWithPriorityMethods interface');
+            }
+
+            $conditionalAttributes = [];
+            if ($model instanceof IModelPriorityConditional) {
+                $conditionalAttributes = $model->getPriorityConditionalAttributes();
+            }
+
+            $conditionalAttributesWithFields = [];
+            foreach ($conditionalAttributes as $field) {
+                $conditionalAttributesWithFields[] = [
+                    'field' => $field,
+                    'operator' => '=',
+                    'operand' => $model->{$field}
+                ];
+            }
+
             if ($this->direction == 'up') {
-                $other = $this->repository->findFirstWithLowerPriorityThan($model->priority);
+                $other = $this->repository->findFirstWithLowerPriorityThan($model->priority, $conditionalAttributesWithFields);
             } else {
-                $other = $this->repository->findFirstWithHigherPriorityThan($model->priority);
+                $other = $this->repository->findFirstWithHigherPriorityThan($model->priority, $conditionalAttributesWithFields);
             }
 
             if ($other) {
