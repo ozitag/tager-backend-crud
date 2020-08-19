@@ -15,4 +15,6 @@ class AdminCrudController extends CrudController
     protected $hasDeleteAction = true;
 
     protected $hasMoveAction = false;
+    
+    protected $hasCountAction = false;
 }

@@ -4,6 +4,7 @@ namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
 use OZiTAG\Tager\Backend\Core\Controllers\Controller;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
+use OZiTAG\Tager\Backend\Crud\Features\CountFeature;
 use OZiTAG\Tager\Backend\Crud\Features\DeleteFeature;
 use OZiTAG\Tager\Backend\Crud\Features\ListFeature;
 use OZiTAG\Tager\Backend\Crud\Features\MoveFeature;
@@ -26,6 +27,8 @@ class CrudController extends Controller
     protected $hasDeleteAction = true;
 
     protected $hasMoveAction = false;
+
+    protected $hasCountAction = false;
 
     private $repository;
 
@@ -56,7 +59,7 @@ class CrudController extends Controller
     private $fullResourceFields;
 
     private $cacheNamespace;
-    
+
     private $checkIfCanDeleteJobClass;
 
     public function __construct(EloquentRepository $repository, $getModelJobClass = null)
@@ -160,6 +163,13 @@ class CrudController extends Controller
             ];
         }
 
+        if ($this->hasCountAction) {
+            $result['count'] = [
+                CountFeature::class,
+                $this->repository
+            ];
+        }
+
         if ($this->hasStoreAction) {
             if (!$this->createModelJobClass) {
                 if ($this->createModelDefaultJobParams) {
@@ -215,6 +225,11 @@ class CrudController extends Controller
     protected function store()
     {
         return $this->serve('store');
+    }
+
+    protected function count()
+    {
+        return $this->serve('count');
     }
 
     public function view($id)
