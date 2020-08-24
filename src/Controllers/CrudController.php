@@ -14,7 +14,7 @@ use OZiTAG\Tager\Backend\Crud\Features\ViewFeature;
 use OZiTAG\Tager\Backend\Crud\Jobs\StoreJob;
 use OZiTAG\Tager\Backend\Crud\Jobs\UpdateJob;
 
-class uCrudController extends Controller
+class CrudController extends Controller
 {
     protected $hasIndexAction = true;
 
