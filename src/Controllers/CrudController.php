@@ -14,7 +14,7 @@ use OZiTAG\Tager\Backend\Crud\Features\ViewFeature;
 use OZiTAG\Tager\Backend\Crud\Jobs\StoreJob;
 use OZiTAG\Tager\Backend\Crud\Jobs\UpdateJob;
 
-class CrudController extends Controller
+class uCrudController extends Controller
 {
     protected $hasIndexAction = true;
 
@@ -89,9 +89,13 @@ class CrudController extends Controller
         $this->fullResourceClass = $fullResourceClass;
     }
 
-    protected function setResourceFields($fields)
+    protected function setResourceFields($fields, $useFieldsForFullResource = false)
     {
         $this->shortResourceFields = $fields;
+
+        if($useFieldsForFullResource){
+            $this->setFullResourceFields($fields);
+        }
     }
 
     protected function setFullResourceFields($fields)
