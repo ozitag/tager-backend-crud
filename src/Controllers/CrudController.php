@@ -123,6 +123,16 @@ class CrudController extends Controller
         $this->setUpdateAction($requestClass, null, $defaultModelJobParams);
     }
 
+    protected function getResourceFields()
+    {
+        return $this->shortResourceFields;
+    }
+
+    protected function getFullResourceFields()
+    {
+        return $this->fullResourceFields;
+    }
+
     public function features()
     {
         $result = [];
