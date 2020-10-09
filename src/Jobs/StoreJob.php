@@ -14,9 +14,15 @@ class StoreJob extends BaseCreateUpdateJob
         return isset(self::$config['hasPriority']) && self::$config['hasPriority'];
     }
 
+    protected function getDefaultValues()
+    {
+        return isset(self::$config['defaultValues']) ? self::$config['defaultValues'] : [];
+    }
+
     public function handle()
     {
-        $data = [];
+        $data = $this->getDefaultValues();
+
         foreach ($this->fields() as $field => $requestField) {
             $data[$field] = $this->request->{$requestField};
         }
