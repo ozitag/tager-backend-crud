@@ -9,7 +9,11 @@ class UpdateJob extends BaseCreateUpdateJob
     public function handle()
     {
         foreach ($this->fields() as $field => $requestField) {
-            $this->model->{$field} = $this->request->{$requestField};
+            if (is_callable($requestField)) {
+                $data[$field] = call_user_func($requestField, $this->request{$field});
+            } else {
+                $data[$field] = $this->request->{$requestField};
+            }
         }
 
         $this->model->save();
