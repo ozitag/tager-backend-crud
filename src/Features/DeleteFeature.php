@@ -40,7 +40,12 @@ class DeleteFeature extends ModelFeature
         if ($this->jobDeleteClass) {
             $this->run($this->jobDeleteClass, ['model' => $this->model()]);
         } else if ($this->repository) {
-            $this->repository->find($this->id)->delete();
+            $model = $this->repository->find($this->id);
+            if ($model) {
+                $model->delete();
+            } else {
+                abort(404, 'Model not found');
+            }
         } else {
             throw new \Exception('JobDeleteClass or Repository must be set');
         }

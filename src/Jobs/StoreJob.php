@@ -19,6 +19,14 @@ class StoreJob extends BaseCreateUpdateJob
         return isset(self::$config['defaultValues']) ? self::$config['defaultValues'] : [];
     }
 
+    /**
+     * @return string
+     */
+    protected function getUpdatedEventClass()
+    {
+        return isset(self::$config['updateEventClass']) ? self::$config['updateEventClass'] : [];
+    }
+
     public function handle()
     {
         $data = $this->getDefaultValues();
@@ -36,6 +44,14 @@ class StoreJob extends BaseCreateUpdateJob
             $data['priority'] = $maxPriorityItem ? $maxPriorityItem->priority + 1 : 1;
         }
 
-        return $this->repository()->fillAndSave($data);
+        $model = $this->repository()->fillAndSave($data);
+
+        $updatedEventClass = $this->getUpdatedEventClass();
+        if ($updatedEventClass) {
+            $event = new $updatedEventClass($model);
+            event($event);
+        }
+
+        return $model;
     }
 }

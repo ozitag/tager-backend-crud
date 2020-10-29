@@ -6,6 +6,14 @@ class UpdateJob extends BaseCreateUpdateJob
 {
     protected static $config = [];
 
+    /**
+     * @return string
+     */
+    protected function getUpdatedEventClass()
+    {
+        return isset(self::$config['updateEventClass']) ? self::$config['updateEventClass'] : [];
+    }
+
     public function handle()
     {
         $this->repository()->set($this->model);
@@ -19,7 +27,13 @@ class UpdateJob extends BaseCreateUpdateJob
             }
         }
 
-        $this->repository()->fillAndSave($data);
+        $this->model = $this->repository()->fillAndSave($data);
+
+        $updatedEventClass = $this->getUpdatedEventClass();
+        if ($updatedEventClass) {
+            $event = new $updatedEventClass($this->model);
+            event($event);
+        }
 
         return $this->model;
     }
