@@ -2,11 +2,13 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
+use Illuminate\Http\Request;
 use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Core\Http\SomeRequest;
 use OZiTAG\Tager\Backend\Core\Pagination\PaginationRequest;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Core\Resources\ResourceCollection;
+use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
 use OZiTAG\Tager\Backend\Crud\Contracts\IRepositoryCrudTree;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
 
@@ -18,12 +20,14 @@ class ListFeature extends Feature
 
     private $resourceFields;
 
-    private $isTree;
+    private IndexAction $action;
 
-    protected bool $hasPagination;
+    protected $hasPagination = false;
+
+    protected $hasQuery = false;
 
     public function __construct(
-        EloquentRepository $repository, $resourceClassName, $resourceFields, $isTree, bool $hasPagination = false
+        EloquentRepository $repository, $resourceClassName, $resourceFields, IndexAction $action
     ) {
         $this->repository = $repository;
 
@@ -31,20 +35,27 @@ class ListFeature extends Feature
 
         $this->resourceFields = $resourceFields;
 
-        $this->isTree = $isTree;
+        $this->action = $action;
 
-        $this->hasPagination = $hasPagination;
+        $this->hasPagination = $this->action->get('hasPagination');
+        $this->hasQuery = $this->action->get('hasSearchByQuery');
     }
 
-    public function handle()
+    public function handle(Request $request)
     {
         if ($this->hasPagination) {
             $this->registerPaginationRequest();
         }
 
-        $items = $this->isTree
+        if ($this->hasQuery) {
+            $this->registerQueryRequest();
+        }
+
+        $items = $this->action->get('isTree')
             ? $this->repository->toFlatTree()
-            : $this->repository->get($this->hasPagination);
+            : $this->repository->get(
+                $this->hasPagination, $this->hasQuery ? $request->get('query') : null
+            );
 
         if (!$this->resourceClassName) {
             ModelResource::setFields($this->resourceFields);

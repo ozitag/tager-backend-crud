@@ -144,8 +144,7 @@ class CrudController extends Controller
                 $this->repository,
                 $this->shortResourceClass,
                 $this->shortResourceFields,
-                $this->indexAction ? $this->indexAction->get('isTree') : false,
-                $this->indexAction ? $this->indexAction->get('hasPagination') : false
+                $this->indexAction ?? new IndexAction(),
             ];
         }
 
