@@ -3,7 +3,10 @@
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
 use OZiTAG\Tager\Backend\Core\Features\Feature;
+use OZiTAG\Tager\Backend\Core\Http\SomeRequest;
+use OZiTAG\Tager\Backend\Core\Pagination\PaginationRequest;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
+use OZiTAG\Tager\Backend\Core\Resources\ResourceCollection;
 use OZiTAG\Tager\Backend\Crud\Contracts\IRepositoryCrudTree;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
 
@@ -17,8 +20,11 @@ class ListFeature extends Feature
 
     private $isTree;
 
-    public function __construct(EloquentRepository $repository, $resourceClassName, $resourceFields, $isTree)
-    {
+    protected bool $hasPagination;
+
+    public function __construct(
+        EloquentRepository $repository, $resourceClassName, $resourceFields, $isTree, bool $hasPagination = false
+    ) {
         $this->repository = $repository;
 
         $this->resourceClassName = $resourceClassName;
@@ -26,17 +32,29 @@ class ListFeature extends Feature
         $this->resourceFields = $resourceFields;
 
         $this->isTree = $isTree;
+
+        $this->hasPagination = $hasPagination;
     }
 
     public function handle()
     {
-        $items = $this->isTree ? $this->repository->toFlatTree() : $this->repository->all();
-
-        if (!empty($this->resourceClassName)) {
-            return call_user_func($this->resourceClassName . '::collection', $items);
+        if ($this->hasPagination) {
+            $this->registerPaginationRequest();
         }
 
-        ModelResource::setFields($this->resourceFields);
-        return ModelResource::collection($items);
+        $items = $this->isTree
+            ? $this->repository->toFlatTree()
+            : $this->repository->get($this->hasPagination);
+
+        if (!$this->resourceClassName) {
+            ModelResource::setFields($this->resourceFields);
+        }
+
+        $items->transform(function ($item) {
+            $class = $this->resourceClassName ?? ModelResource::class;
+            return (new $class($item));
+        });
+
+        return new ResourceCollection($items);
     }
 }

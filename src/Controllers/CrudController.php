@@ -4,6 +4,9 @@ namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
 use OZiTAG\Tager\Backend\Core\Controllers\Controller;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
+use OZiTAG\Tager\Backend\Crud\Actions\DeleteAction;
+use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
+use OZiTAG\Tager\Backend\Crud\Actions\StoreOrUpdateAction;
 use OZiTAG\Tager\Backend\Crud\Features\CountFeature;
 use OZiTAG\Tager\Backend\Crud\Features\DeleteFeature;
 use OZiTAG\Tager\Backend\Crud\Features\ListFeature;
@@ -16,6 +19,8 @@ use OZiTAG\Tager\Backend\Crud\Jobs\UpdateJob;
 
 class CrudController extends Controller
 {
+    public bool $pagination = false;
+
     protected $hasIndexAction = true;
 
     protected $hasViewAction = true;
@@ -32,21 +37,7 @@ class CrudController extends Controller
 
     private $repository;
 
-    private $indexActionIsTree = false;
-
     private $getModelJobClass;
-
-    private $createRequestClass;
-
-    private $createModelJobClass;
-
-    private $createModelDefaultJobParams;
-
-    private $updateRequestClass;
-
-    private $updateModelJobClass;
-
-    private $updateModelDefaultJobParams;
 
     private $deleteModelJobClass;
 
@@ -60,7 +51,18 @@ class CrudController extends Controller
 
     private $cacheNamespace;
 
-    private $checkIfCanDeleteJobClass;
+
+    // ***** Actions ****** //
+
+    protected ?IndexAction $indexAction = null;
+
+    protected ?StoreOrUpdateAction $storeAction = null;
+
+    protected ?StoreOrUpdateAction $updateAction = null;
+
+    protected ?DeleteAction $deleteAction = null;
+
+    // ***** ******* ****** //
 
     public function __construct(EloquentRepository $repository, $getModelJobClass = null)
     {
@@ -73,15 +75,34 @@ class CrudController extends Controller
         $this->cacheNamespace = $namespace;
     }
 
-    public function setIndexAction($isTree)
+    // ***** Actions ****** //
+
+    public function setIndexAction(IndexAction $action)
     {
-        $this->indexActionIsTree = $isTree;
+        $this->indexAction = $action;
     }
 
-    public function setDeleteAction($checkIfCanDeleteJobClass = null)
+    public function setDeleteAction(DeleteAction $action)
     {
-        $this->checkIfCanDeleteJobClass = $checkIfCanDeleteJobClass;
+        $this->deleteAction = $action;
     }
+
+    protected function setStoreAction(StoreOrUpdateAction $action)
+    {
+        $this->storeAction = $action;
+    }
+
+    protected function setUpdateAction(StoreOrUpdateAction $action)
+    {
+        $this->updateAction = $action;
+    }
+
+    protected function setStoreAndUpdateAction(StoreOrUpdateAction $action)
+    {
+        $this->updateAction = $this->storeAction = $action;
+    }
+
+    // ***** ******* ****** //
 
     protected function setResourceClasses($shortResourceClass = null, $fullResourceClass = null)
     {
@@ -101,26 +122,6 @@ class CrudController extends Controller
     protected function setFullResourceFields($fields)
     {
         $this->fullResourceFields = $fields;
-    }
-
-    protected function setStoreAction($createRequestClass = null, $createModelJobClass = null, $defaultCreateModelJobParams = [])
-    {
-        $this->createRequestClass = $createRequestClass;
-        $this->createModelJobClass = $createModelJobClass;
-        $this->createModelDefaultJobParams = $defaultCreateModelJobParams;
-    }
-
-    protected function setUpdateAction($updateRequestClass = null, $updateModelJobClass = null, $defaultUpdateModelJobParams = [])
-    {
-        $this->updateRequestClass = $updateRequestClass;
-        $this->updateModelJobClass = $updateModelJobClass;
-        $this->updateModelDefaultJobParams = $defaultUpdateModelJobParams;
-    }
-
-    protected function setStoreAndUpdateAction($requestClass, $defaultModelJobParams)
-    {
-        $this->setStoreAction($requestClass, null, $defaultModelJobParams);
-        $this->setUpdateAction($requestClass, null, $defaultModelJobParams);
     }
 
     protected function getResourceFields()
@@ -143,7 +144,8 @@ class CrudController extends Controller
                 $this->repository,
                 $this->shortResourceClass,
                 $this->shortResourceFields,
-                $this->indexActionIsTree
+                $this->indexAction ? $this->indexAction->get('isTree') : false,
+                $this->indexAction ? $this->indexAction->get('hasPagination') : false
             ];
         }
 
@@ -162,7 +164,7 @@ class CrudController extends Controller
                 DeleteFeature::class,
                 $this->getModelJobClass,
                 $this->repository,
-                $this->checkIfCanDeleteJobClass,
+                $this->deleteAction ? $this->deleteAction->getCanDeleteJobClass() : null,
                 $this->deleteModelJobClass,
                 $this->cacheNamespace
             ];
@@ -185,20 +187,20 @@ class CrudController extends Controller
         }
 
         if ($this->hasStoreAction) {
-            if (!$this->createModelJobClass) {
-                if ($this->createModelDefaultJobParams) {
-                    StoreJob::setConfig(array_merge($this->createModelDefaultJobParams, [
+            if (!$this->storeAction->getJobClass()) {
+                if ($this->storeAction->getJobParams()) {
+                    StoreJob::setConfig(array_merge($this->storeAction->getJobParams(), [
                         'hasPriority' => $this->hasMoveAction
                     ]));
                 }
                 $jobClass = StoreJob::class;
             } else {
-                $jobClass = $this->createModelJobClass;
+                $jobClass = $this->storeAction->getJobClass();
             }
 
             $result['store'] = [
                 StoreFeature::class,
-                $this->createRequestClass,
+                $this->storeAction->get('requestClass'),
                 $jobClass,
                 $this->fullResourceClass,
                 $this->fullResourceFields,
@@ -207,20 +209,20 @@ class CrudController extends Controller
         }
 
         if ($this->hasUpdateAction) {
-            if (!$this->updateModelJobClass) {
-                if ($this->updateModelDefaultJobParams) {
-                    UpdateJob::setConfig($this->updateModelDefaultJobParams);
+            if (!$this->updateAction->getJobClass()) {
+                if ($this->updateAction->getJobParams()) {
+                    UpdateJob::setConfig($this->updateAction->getJobParams());
                 }
                 $jobClass = UpdateJob::class;
             } else {
-                $jobClass = $this->updateModelJobClass;
+                $jobClass = $this->updateAction->getJobClass();
             }
 
             $result['update'] = [
                 UpdateFeature::class,
                 $this->getModelJobClass,
                 $this->repository,
-                $this->updateRequestClass,
+                $this->updateAction->getRequestClass(),
                 $jobClass,
                 $this->fullResourceClass,
                 $this->fullResourceFields,
