@@ -51,11 +51,11 @@ class ListFeature extends Feature
             $this->registerQueryRequest();
         }
 
+        $query = $this->hasQuery ? $request->get('query') : null;
+
         $items = $this->action->get('isTree')
-            ? $this->repository->toFlatTree()
-            : $this->repository->get(
-                $this->hasPagination, $this->hasQuery ? $request->get('query') : null
-            );
+            ? $this->repository->toFlatTree($this->hasPagination, $query)
+            : $this->repository->get($this->hasPagination, $query);
 
         if (!$this->resourceClassName) {
             ModelResource::setFields($this->resourceFields);
