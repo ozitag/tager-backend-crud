@@ -42,7 +42,7 @@ class ProcessFilesJob extends Job
                 return $result;
             }
 
-            $value = $i == 0 ? $value->{$part} : $value[$part];
+            $value = $value[$part];
         }
 
         return $value;

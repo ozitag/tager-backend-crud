@@ -33,9 +33,9 @@ class StoreJob extends BaseCreateUpdateJob
 
         foreach ($this->fields() as $field => $requestField) {
             if (is_callable($requestField)) {
-                $data[$field] = call_user_func($requestField, $this->request{$field});
+                $data[$field] = call_user_func($requestField, $this->request[$field]);
             } else {
-                $data[$field] = $this->request->{$requestField};
+                $data[$field] = $this->request[$requestField];
             }
         }
 
