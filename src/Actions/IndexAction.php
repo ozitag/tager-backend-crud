@@ -19,7 +19,7 @@ class IndexAction extends DefaultAction
         $this->getIndexActionBuilderJobClass = $getIndexBuilderJobClass;
     }
 
-    public function getIndexActionBuilderJobClass(): string
+    public function getIndexActionBuilderJobClass(): ?string
     {
         return $this->getIndexActionBuilderJobClass;
     }
