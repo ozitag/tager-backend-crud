@@ -185,7 +185,7 @@ class CrudController extends Controller
             ];
         }
 
-        if ($this->hasStoreAction) {
+        if ($this->hasStoreAction && $this->storeAction) {
             if (!$this->storeAction->getJobClass()) {
                 if ($this->storeAction->getJobParams()) {
                     StoreJob::setConfig(array_merge($this->storeAction->getJobParams(), [
@@ -207,7 +207,7 @@ class CrudController extends Controller
             ];
         }
 
-        if ($this->hasUpdateAction) {
+        if ($this->hasUpdateAction && $this->updateAction) {
             if (!$this->updateAction->getJobClass()) {
                 if ($this->updateAction->getJobParams()) {
                     UpdateJob::setConfig($this->updateAction->getJobParams());
