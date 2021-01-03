@@ -21,35 +21,35 @@ class CrudController extends Controller
 {
     public bool $pagination = false;
 
-    protected $hasIndexAction = true;
+    protected bool $hasIndexAction = true;
 
-    protected $hasViewAction = true;
+    protected bool $hasViewAction = true;
 
-    protected $hasStoreAction = true;
+    protected bool $hasStoreAction = true;
 
-    protected $hasUpdateAction = true;
+    protected bool $hasUpdateAction = true;
 
-    protected $hasDeleteAction = true;
+    protected bool $hasDeleteAction = true;
 
-    protected $hasMoveAction = false;
+    protected bool $hasMoveAction = false;
 
-    protected $hasCountAction = false;
+    protected bool $hasCountAction = false;
 
-    private $repository;
+    private EloquentRepository $repository;
 
-    private $getModelJobClass;
+    private ?string $getModelJobClass;
 
-    private $deleteModelJobClass;
+    private ?string $deleteModelJobClass;
 
-    private $shortResourceClass;
+    private ?string $shortResourceClass;
 
-    private $shortResourceFields;
+    private ?array $shortResourceFields;
 
-    private $fullResourceClass;
+    private ?string $fullResourceClass;
 
-    private $fullResourceFields;
+    private ?array $fullResourceFields;
 
-    private $cacheNamespace;
+    private ?string $cacheNamespace;
 
 
     // ***** Actions ****** //
@@ -64,13 +64,14 @@ class CrudController extends Controller
 
     // ***** ******* ****** //
 
-    public function __construct(EloquentRepository $repository, $getModelJobClass = null)
+    public function __construct(EloquentRepository $repository, ?string $getModelJobClass = null)
     {
         $this->repository = $repository;
+
         $this->getModelJobClass = $getModelJobClass;
     }
 
-    public function setCacheNamespace($namespace)
+    public function setCacheNamespace(string $namespace)
     {
         $this->cacheNamespace = $namespace;
     }
@@ -104,7 +105,7 @@ class CrudController extends Controller
 
     // ***** ******* ****** //
 
-    protected function setResourceFields($fields, $useFieldsForFullResource = false)
+    protected function setResourceFields(array $fields, bool $useFieldsForFullResource = false)
     {
         $this->shortResourceFields = $fields;
 
@@ -130,26 +131,26 @@ class CrudController extends Controller
         }
 
         if ($fullResourceClass) {
-            $this->setFullResourceFields($shortResourceClass);
+            $this->setFullResourceClass($fullResourceClass);
         }
     }
 
-    protected function setFullResourceFields($fields)
+    protected function setFullResourceFields(array $fields)
     {
         $this->fullResourceFields = $fields;
     }
 
-    protected function getResourceFields()
+    protected function getResourceFields(): array
     {
         return $this->shortResourceFields;
     }
 
-    protected function getFullResourceFields()
+    protected function getFullResourceFields(): array
     {
         return $this->fullResourceFields;
     }
 
-    public function features()
+    public function features(): array
     {
         $result = [];
 
