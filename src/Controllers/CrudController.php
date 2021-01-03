@@ -104,18 +104,33 @@ class CrudController extends Controller
 
     // ***** ******* ****** //
 
-    protected function setResourceClasses($shortResourceClass = null, $fullResourceClass = null)
-    {
-        $this->shortResourceClass = $shortResourceClass;
-        $this->fullResourceClass = $fullResourceClass;
-    }
-
     protected function setResourceFields($fields, $useFieldsForFullResource = false)
     {
         $this->shortResourceFields = $fields;
 
-        if($useFieldsForFullResource){
+        if ($useFieldsForFullResource) {
             $this->setFullResourceFields($fields);
+        }
+    }
+
+    protected function setShortResourceClass(string $class)
+    {
+        $this->shortResourceClass = $class;
+    }
+
+    protected function setFullResourceClass(string $class)
+    {
+        $this->fullResourceClass = $class;
+    }
+
+    protected function setResourceClasses(?string $shortResourceClass = null, ?string $fullResourceClass = null)
+    {
+        if ($shortResourceClass) {
+            $this->setShortResourceClass($shortResourceClass);
+        }
+
+        if ($fullResourceClass) {
+            $this->setFullResourceFields($shortResourceClass);
         }
     }
 
