@@ -4,15 +4,15 @@ namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
 class PublicCrudController extends CrudController
 {
-    protected $hasIndexAction = true;
+    protected bool $hasIndexAction = true;
 
-    protected $hasViewAction = true;
+    protected bool $hasViewAction = true;
 
-    protected $hasStoreAction = false;
+    protected bool $hasStoreAction = false;
 
-    protected $hasUpdateAction = false;
+    protected bool $hasUpdateAction = false;
 
-    protected $hasDeleteAction = false;
+    protected bool $hasDeleteAction = false;
 
-    protected $hasMoveAction = false;
+    protected bool $hasMoveAction = false;
 }

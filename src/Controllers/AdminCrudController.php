@@ -4,17 +4,17 @@ namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
 class AdminCrudController extends CrudController
 {
-    protected $hasIndexAction = true;
+    protected bool $hasIndexAction = true;
 
-    protected $hasViewAction = true;
+    protected bool $hasViewAction = true;
 
-    protected $hasStoreAction = true;
+    protected bool $hasStoreAction = true;
 
-    protected $hasUpdateAction = true;
+    protected bool $hasUpdateAction = true;
 
-    protected $hasDeleteAction = true;
+    protected bool $hasDeleteAction = true;
 
-    protected $hasMoveAction = false;
+    protected bool $hasMoveAction = false;
     
-    protected $hasCountAction = false;
+    protected bool $hasCountAction = false;
 }
