@@ -52,12 +52,23 @@ class ProcessFilesJob extends Job
     {
         $fileScenarios = $this->request->fileScenarios();
         foreach ($fileScenarios as $field => $scenario) {
+            $pointPos = strpos($field, '.');
+            $innerField = null;
+            if ($pointPos !== false) {
+                $innerField = substr($field, $pointPos + 1);
+                $field = substr($field, 0, $pointPos);
+            }
+
             $value = $this->getValue($field);
 
             if ($value) {
                 if (is_array($value)) {
                     foreach ($value as $item) {
-                        $storage->setFileScenario($item, $scenario);
+                        if ($innerField && is_array($item) && isset($item[$innerField])) {
+                            $storage->setFileScenario($item[$innerField], $scenario);
+                        } else {
+                            $storage->setFileScenario($item, $scenario);
+                        }
                     }
                 } else {
                     $storage->setFileScenario($value, $scenario);
