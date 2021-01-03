@@ -37,19 +37,19 @@ class CrudController extends Controller
 
     private EloquentRepository $repository;
 
-    private ?string $getModelJobClass;
+    private ?string $getModelJobClass = null;
 
-    private ?string $deleteModelJobClass;
+    private ?string $deleteModelJobClass = null;
 
-    private ?string $shortResourceClass;
+    private ?string $shortResourceClass = null;
 
-    private ?array $shortResourceFields;
+    private ?array $shortResourceFields = null;
 
-    private ?string $fullResourceClass;
+    private ?string $fullResourceClass = null;
 
-    private ?array $fullResourceFields;
+    private ?array $fullResourceFields = null;
 
-    private ?string $cacheNamespace;
+    private ?string $cacheNamespace = null;
 
 
     // ***** Actions ****** //
