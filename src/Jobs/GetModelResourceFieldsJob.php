@@ -7,18 +7,14 @@ use OZiTAG\Tager\Backend\Core\Jobs\Job;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
 use OZiTAG\Tager\Backend\Files\Enums\TagerFileThumbnail;
 
-class GetModelResourceByResourceFieldsJob extends Job
+class GetModelResourceFieldsJob extends Job
 {
-    protected $model;
-
     protected $resourceFields;
 
     protected $isAdmin;
 
-    public function __construct($model, array $resourceFields, bool $isAdmin)
+    public function __construct(array $resourceFields, bool $isAdmin)
     {
-        $this->model = $model;
-
         $this->resourceFields = $resourceFields;
 
         $this->isAdmin = $isAdmin;
@@ -53,8 +49,6 @@ class GetModelResourceByResourceFieldsJob extends Job
             $resourceFields = $this->rec($this->resourceFields);
         }
 
-        ModelResource::setFields($resourceFields);
-
-        return new ModelResource($this->model);
+        return $resourceFields;
     }
 }

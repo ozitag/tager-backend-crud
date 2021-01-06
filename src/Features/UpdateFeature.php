@@ -5,7 +5,7 @@ namespace OZiTAG\Tager\Backend\Crud\Features;
 use Illuminate\Support\Facades\App;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
-use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceByResourceFieldsJob;
+use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceFieldsJob;
 use OZiTAG\Tager\Backend\Crud\Jobs\ProcessFilesJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
 use OZiTAG\Tager\Backend\Files\Enums\TagerFileThumbnail;
@@ -58,11 +58,13 @@ class UpdateFeature extends ModelFeature
             $resourceClass = $this->resourceClass;
             return new $resourceClass($model);
         } else {
-            return $this->run(GetModelResourceByResourceFieldsJob::class, [
+            $resourceFields = $this->run(GetModelResourceFieldsJob::class, [
                 'resourceFields' => $this->resourceFields,
                 'isAdmin' => $this->isAdmin,
-                'model' => $model
             ]);
+
+            ModelResource::setFields($resourceFields);
+            return new ModelResource($this->model());
         }
     }
 }

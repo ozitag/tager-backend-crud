@@ -8,7 +8,7 @@ use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Core\Resources\ResourceCollection;
 use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
-use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceByResourceFieldsJob;
+use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceFieldsJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
 use OZiTAG\Tager\Backend\Files\Enums\TagerFileThumbnail;
 
@@ -80,11 +80,12 @@ class ListFeature extends Feature
         }
 
         if (!$this->resourceClassName) {
-            return $this->run(GetModelResourceByResourceFieldsJob::class, [
+            $resourceFields = $this->run(GetModelResourceFieldsJob::class, [
                 'resourceFields' => $this->resourceFields,
                 'isAdmin' => $this->isAdmin,
-                'model' => $model
             ]);
+
+            ModelResource::setFields($resourceFields);
         }
 
         $items->transform(function ($item) {
