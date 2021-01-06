@@ -5,8 +5,10 @@ namespace OZiTAG\Tager\Backend\Crud\Features;
 use Illuminate\Support\Facades\App;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
+use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceByResourceFieldsJob;
 use OZiTAG\Tager\Backend\Crud\Jobs\ProcessFilesJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
+use OZiTAG\Tager\Backend\Files\Enums\TagerFileThumbnail;
 use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 
 class UpdateFeature extends ModelFeature
@@ -21,7 +23,9 @@ class UpdateFeature extends ModelFeature
 
     private $cacheNamespace;
 
-    public function __construct($id, $getByidJobClass, EloquentRepository $repository, $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace)
+    private $isAdmin;
+
+    public function __construct($id, $getByidJobClass, EloquentRepository $repository, $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $isAdmin)
     {
         parent::__construct($id, $getByidJobClass, $repository);
 
@@ -30,6 +34,7 @@ class UpdateFeature extends ModelFeature
         $this->resourceClass = $resourceClass;
         $this->resourceFields = $resourceFields;
         $this->cacheNamespace = $cacheNamespace;
+        $this->isAdmin = $isAdmin;
     }
 
     public function handle(HttpCache $httpCache)
@@ -53,8 +58,11 @@ class UpdateFeature extends ModelFeature
             $resourceClass = $this->resourceClass;
             return new $resourceClass($model);
         } else {
-            ModelResource::setFields($this->resourceFields);
-            return new ModelResource($model);
+            return $this->run(GetModelResourceByResourceFieldsJob::class, [
+                'resourceFields' => $this->resourceFields,
+                'isAdmin' => $this->isAdmin,
+                'model' => $model
+            ]);
         }
     }
 }

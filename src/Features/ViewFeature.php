@@ -3,7 +3,9 @@
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
+use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceByResourceFieldsJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
+use OZiTAG\Tager\Backend\Files\Enums\TagerFileThumbnail;
 
 class ViewFeature extends ModelFeature
 {
@@ -11,11 +13,14 @@ class ViewFeature extends ModelFeature
 
     private $resourceFields;
 
-    public function __construct($id, $jobGetByIdClass, $repository, $resourceClass, $resourceFields)
+    private $isAdmin = false;
+
+    public function __construct($id, $jobGetByIdClass, $repository, $resourceClass, $resourceFields, $isAdmin)
     {
         parent::__construct($id, $jobGetByIdClass, $repository);
         $this->resourceClass = $resourceClass;
         $this->resourceFields = $resourceFields;
+        $this->isAdmin = $isAdmin;
     }
 
     public function handle()
@@ -25,7 +30,10 @@ class ViewFeature extends ModelFeature
             return new $resourceClass($this->model());
         }
 
-        ModelResource::setFields($this->resourceFields);
-        return new ModelResource($this->model());
+        return $this->run(GetModelResourceByResourceFieldsJob::class, [
+            'resourceFields' => $this->resourceFields,
+            'isAdmin' => $this->isAdmin,
+            'model' => $model
+        ]);
     }
 }

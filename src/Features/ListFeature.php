@@ -8,7 +8,9 @@ use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Core\Resources\ResourceCollection;
 use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
+use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceByResourceFieldsJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
+use OZiTAG\Tager\Backend\Files\Enums\TagerFileThumbnail;
 
 class ListFeature extends Feature
 {
@@ -24,8 +26,11 @@ class ListFeature extends Feature
 
     protected $hasQuery = false;
 
+    protected $isAdmin = false;
+
     public function __construct(
-        EloquentRepository $repository, $resourceClassName, $resourceFields, IndexAction $action
+        EloquentRepository $repository, $resourceClassName, $resourceFields, IndexAction $action,
+        bool $isAdmin
     )
     {
         $this->repository = $repository;
@@ -35,6 +40,8 @@ class ListFeature extends Feature
         $this->resourceFields = $resourceFields;
 
         $this->action = $action;
+
+        $this->isAdmin = $isAdmin;
 
         $this->hasPagination = $this->action->get('hasPagination');
         $this->hasQuery = $this->action->get('hasSearchByQuery');
@@ -51,7 +58,6 @@ class ListFeature extends Feature
         }
 
         $query = $this->hasQuery ? $request->get('query') : null;
-
 
         $getIndexActionBuilderJobClass = $this->action->getIndexActionBuilderJobClass();
         if ($getIndexActionBuilderJobClass) {
@@ -74,7 +80,11 @@ class ListFeature extends Feature
         }
 
         if (!$this->resourceClassName) {
-            ModelResource::setFields($this->resourceFields);
+            return $this->run(GetModelResourceByResourceFieldsJob::class, [
+                'resourceFields' => $this->resourceFields,
+                'isAdmin' => $this->isAdmin,
+                'model' => $model
+            ]);
         }
 
         $items->transform(function ($item) {

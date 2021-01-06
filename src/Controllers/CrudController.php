@@ -21,6 +21,8 @@ class CrudController extends Controller
 {
     public bool $pagination = false;
 
+    protected bool $isAdmin = false;
+
     protected bool $hasIndexAction = true;
 
     protected bool $hasViewAction = true;
@@ -161,6 +163,7 @@ class CrudController extends Controller
                 $this->shortResourceClass,
                 $this->shortResourceFields,
                 $this->indexAction ?? new IndexAction(),
+                $this->isAdmin
             ];
         }
 
@@ -171,6 +174,7 @@ class CrudController extends Controller
                 $this->repository,
                 $this->fullResourceClass,
                 $this->fullResourceFields,
+                $this->isAdmin
             ];
         }
 
@@ -241,7 +245,8 @@ class CrudController extends Controller
                 $jobClass,
                 $this->fullResourceClass,
                 $this->fullResourceFields,
-                $this->cacheNamespace
+                $this->cacheNamespace,
+                $this->isAdmin
             ];
         }
 
