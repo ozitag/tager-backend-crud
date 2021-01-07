@@ -4,6 +4,7 @@ namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
 use OZiTAG\Tager\Backend\Core\Controllers\Controller;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
+use OZiTAG\Tager\Backend\Crud\Actions\DefaultAction;
 use OZiTAG\Tager\Backend\Crud\Actions\DeleteAction;
 use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
 use OZiTAG\Tager\Backend\Crud\Actions\StoreOrUpdateAction;
@@ -64,6 +65,8 @@ class CrudController extends Controller
 
     protected ?DeleteAction $deleteAction = null;
 
+    protected array $customActions = [];
+
     // ***** ******* ****** //
 
     public function __construct(EloquentRepository $repository, ?string $getModelJobClass = null)
@@ -103,6 +106,11 @@ class CrudController extends Controller
     protected function setStoreAndUpdateAction(StoreOrUpdateAction $action)
     {
         $this->updateAction = $this->storeAction = $action;
+    }
+
+    protected function addAction($actionName, DefaultAction $action)
+    {
+        $this->customActions[$actionName] = $action;
     }
 
     // ***** ******* ****** //
@@ -223,7 +231,8 @@ class CrudController extends Controller
                 $jobClass,
                 $this->fullResourceClass,
                 $this->fullResourceFields,
-                $this->cacheNamespace
+                $this->cacheNamespace,
+                $this->storeAction->getEventClass()
             ];
         }
 
@@ -246,8 +255,22 @@ class CrudController extends Controller
                 $this->fullResourceClass,
                 $this->fullResourceFields,
                 $this->cacheNamespace,
+                $this->updateAction->getEventClass(),
                 $this->isAdmin
             ];
+        }
+
+        foreach ($this->customActions as $actionName => $action) {
+            if ($action instanceof IndexAction) {
+                $result[$actionName] = [
+                    ListFeature::class,
+                    $this->repository,
+                    $action->resourceClass ?? $this->shortResourceClass,
+                    $action->resourceFields ?? $this->shortResourceFields,
+                    $action,
+                    $this->isAdmin
+                ];
+            }
         }
 
         return $result;
@@ -286,5 +309,14 @@ class CrudController extends Controller
     public function move($id, $direction)
     {
         return $this->serve('move', ['id' => $id, 'direction' => $direction]);
+    }
+
+    public function __call($name, $arguments)
+    {
+        if (isset($this->customActions[$name])) {
+            return $this->serve($name);
+        }
+
+        parent::__call($name, $arguments);
     }
 }

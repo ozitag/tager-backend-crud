@@ -13,19 +13,21 @@ use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 
 class UpdateFeature extends ModelFeature
 {
-    private $requestClass;
+    private ?string $requestClass;
 
-    private $jobClass;
+    private ?string $jobClass;
 
-    private $resourceClass;
+    private ?string $resourceClass;
 
-    private $resourceFields;
+    private ?array $resourceFields;
 
-    private $cacheNamespace;
+    private ?string $cacheNamespace;
 
-    private $isAdmin;
+    private ?string $eventClass;
 
-    public function __construct($id, $getByidJobClass, EloquentRepository $repository, $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $isAdmin)
+    private bool $isAdmin = false;
+
+    public function __construct($id, $getByidJobClass, EloquentRepository $repository, $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $eventClass, $isAdmin)
     {
         parent::__construct($id, $getByidJobClass, $repository);
 
@@ -34,6 +36,7 @@ class UpdateFeature extends ModelFeature
         $this->resourceClass = $resourceClass;
         $this->resourceFields = $resourceFields;
         $this->cacheNamespace = $cacheNamespace;
+        $this->eventClass = $eventClass;
         $this->isAdmin = $isAdmin;
     }
 
@@ -52,6 +55,11 @@ class UpdateFeature extends ModelFeature
 
         if ($this->cacheNamespace) {
             $httpCache->clear($this->cacheNamespace);
+        }
+
+        if ($this->eventClass) {
+            $eventClass = $this->eventClass;
+            event(new $eventClass($model->id));
         }
 
         if (!empty($this->resourceClass)) {

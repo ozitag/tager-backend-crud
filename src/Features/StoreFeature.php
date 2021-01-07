@@ -21,13 +21,16 @@ class StoreFeature extends Feature
 
     private $cacheNamespace;
 
-    public function __construct($requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace)
+    private $eventClass;
+
+    public function __construct($requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $eventClass)
     {
         $this->requestClass = $requestClass;
         $this->jobClass = $jobClass;
         $this->resourceClass = $resourceClass;
         $this->resourceFields = $resourceFields;
         $this->cacheNamespace = $cacheNamespace;
+        $this->eventClass = $eventClass;
     }
 
     public function handle(HttpCache $httpCache)
@@ -42,6 +45,11 @@ class StoreFeature extends Feature
 
         if ($this->cacheNamespace) {
             $httpCache->clear($this->cacheNamespace);
+        }
+
+        if ($this->eventClass) {
+            $eventClass = $this->eventClass;
+            event(new $eventClass($model->id));
         }
 
         if (!empty($this->resourceClass)) {

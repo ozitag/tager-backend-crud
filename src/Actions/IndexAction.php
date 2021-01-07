@@ -12,6 +12,9 @@ class IndexAction extends DefaultAction
     protected bool $hasSearchByQuery = false;
     protected bool $isTree = false;
 
+    public ?string $resourceClass = null;
+    public ?array $resourceFields = null;
+
     public function __construct(?string $getIndexBuilderJobClass = null)
     {
         parent::__construct();
@@ -24,30 +27,33 @@ class IndexAction extends DefaultAction
         return $this->getIndexActionBuilderJobClass;
     }
 
-    /**
-     * @return IAction
-     */
     public function enablePagination(): IAction
     {
         $this->hasPagination = true;
         return $this;
     }
 
-    /**
-     * @return IAction
-     */
     public function enableSearchByQuery(): IAction
     {
         $this->hasSearchByQuery = true;
         return $this;
     }
 
-    /**
-     * @return IAction
-     */
     public function enableTree(): IAction
     {
         $this->isTree = true;
+        return $this;
+    }
+
+    public function setResource(string $resourceClass): IAction
+    {
+        $this->resourceClass = $resourceClass;
+        return $this;
+    }
+
+    public function setResourceFields(array $resourceFields): IAction
+    {
+        $this->resourceFields = $resourceFields;
         return $this;
     }
 }

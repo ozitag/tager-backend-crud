@@ -7,32 +7,33 @@ class StoreOrUpdateAction extends DefaultAction
     protected ?string $requestClass = null;
     protected ?string $jobClass = null;
     protected ?array $jobParams = null;
+    protected ?string $eventClass = null;
 
-    public function __construct(?string $requestClass = null, ?string $jobClass = null, array $jobParams = [])
+    public function __construct(?string $requestClass = null, ?string $jobClass = null, array $jobParams = [], ?string $eventClass = null)
     {
         $this->requestClass = $requestClass;
         $this->jobClass = $jobClass;
         $this->jobParams = $jobParams;
+        $this->eventClass = $eventClass;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getRequestClass(): ?string {
+    public function getRequestClass(): ?string
+    {
         return $this->requestClass;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getJobClass(): ?string {
+    public function getJobClass(): ?string
+    {
         return $this->jobClass;
     }
 
-    /**
-     * @return array|null
-     */
-    public function getJobParams(): ?array {
+    public function getJobParams(): ?array
+    {
         return $this->jobParams;
+    }
+
+    public function getEventClass(): ?string
+    {
+        return $this->eventClass;
     }
 }
