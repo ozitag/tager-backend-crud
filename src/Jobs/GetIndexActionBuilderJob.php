@@ -9,12 +9,8 @@ abstract class GetIndexActionBuilderJob extends Job
 {
     protected Request $request;
 
-    protected ?string $query;
-
-    public function __construct(Request $request, ?string $query = null)
+    public function __construct(Request $request)
     {
         $this->request = $request;
-
-        $this->query = $query;
     }
 }
