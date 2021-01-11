@@ -44,6 +44,8 @@ class UpdateFeature extends ModelFeature
     {
         $request = App::make($this->requestClass);
 
+        $oldAttributes = $this->model()->attributesToArray();
+
         if (!empty($request->fileScenarios())) {
             $this->run(ProcessFilesJob::class, ['request' => $request]);
         }
@@ -59,7 +61,7 @@ class UpdateFeature extends ModelFeature
 
         if ($this->eventClass) {
             $eventClass = $this->eventClass;
-            event(new $eventClass($model->id));
+            event(new $eventClass($model->id, $oldAttributes));
         }
 
         if (!empty($this->resourceClass)) {
