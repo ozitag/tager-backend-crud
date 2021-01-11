@@ -9,6 +9,7 @@ class IndexAction extends DefaultAction
     protected ?string $getIndexActionBuilderJobClass = null;
 
     protected bool $hasPagination = false;
+    protected bool $hasFilter = false;
     protected bool $hasSearchByQuery = false;
     protected bool $isTree = false;
 
@@ -36,6 +37,12 @@ class IndexAction extends DefaultAction
     public function enableSearchByQuery(): IAction
     {
         $this->hasSearchByQuery = true;
+        return $this;
+    }
+
+    public function enableFilter(): IAction
+    {
+        $this->hasFilter = true;
         return $this;
     }
 
