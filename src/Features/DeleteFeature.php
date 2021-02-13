@@ -17,7 +17,9 @@ class DeleteFeature extends ModelFeature
 
     private $cacheNamespace;
 
-    public function __construct($id, $jobGetByIdClass, $repository, $checkIfCanDeleteJobClass, $jobDeleteClass, $cacheNamespace)
+    private $eventClass;
+
+    public function __construct($id, $jobGetByIdClass, $repository, $checkIfCanDeleteJobClass, $jobDeleteClass, $cacheNamespace, $eventClass)
     {
         parent::__construct($id, $jobGetByIdClass, $repository);
 
@@ -26,6 +28,7 @@ class DeleteFeature extends ModelFeature
 
         $this->repository = $repository;
         $this->cacheNamespace = $cacheNamespace;
+        $this->eventClass = $eventClass;
     }
 
     public function handle(HttpCache $httpCache)
@@ -52,6 +55,11 @@ class DeleteFeature extends ModelFeature
 
         if ($this->cacheNamespace) {
             $httpCache->clear($this->cacheNamespace);
+        }
+
+        if ($this->eventClass) {
+            $eventClass = $this->eventClass;
+            event(new $eventClass($model->getAttributes()));
         }
 
         return new SuccessResource();

@@ -193,7 +193,8 @@ class CrudController extends Controller
                 $this->repository,
                 $this->deleteAction ? $this->deleteAction->getCanDeleteJobClass() : null,
                 $this->deleteModelJobClass,
-                $this->cacheNamespace
+                $this->cacheNamespace,
+                $this->deleteAction ? $this->deleteAction->getDeletedModelEvent() : null
             ];
         }
 

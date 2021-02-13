@@ -2,6 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
+use Doctrine\DBAL\Driver\PDO\Exception;
 use Illuminate\Support\Facades\App;
 use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Crud\Events\ModelChanged;
