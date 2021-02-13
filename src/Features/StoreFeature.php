@@ -42,6 +42,9 @@ class StoreFeature extends Feature
         }
 
         $model = $this->run($this->jobClass, ['request' => $request]);
+        if(!$model){
+            throw new \Exception('Failure create model');
+        }
 
         if ($this->cacheNamespace) {
             $httpCache->clear($this->cacheNamespace);
