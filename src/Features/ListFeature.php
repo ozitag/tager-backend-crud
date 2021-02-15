@@ -59,9 +59,7 @@ class ListFeature extends Feature
 
         $getIndexActionBuilderJobClass = $this->action->getIndexActionBuilderJobClass();
         if ($getIndexActionBuilderJobClass) {
-            $builder = $this->run($getIndexActionBuilderJobClass, [
-                'request' => $request
-            ]);
+            $builder = $this->run($getIndexActionBuilderJobClass);
 
             if ($this->hasQuery) {
                 $builder = $this->repository->searchByQuery($query, $builder);
