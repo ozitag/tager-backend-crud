@@ -2,34 +2,63 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Jobs;
 
+use OZiTAG\Tager\Backend\Utils\Helpers\Translit;
+
 class StoreJob extends BaseCreateUpdateJob
 {
     protected static $config = [];
 
-    /**
-     * @return bool
-     */
-    protected function hasPriority()
+    protected function hasPriority(): bool
     {
-        return isset(self::$config['hasPriority']) && self::$config['hasPriority'];
+        return self::$config['hasPriority'] ?? false;
     }
 
-    protected function getDefaultValues()
+    protected function getDefaultValues(): ?array
     {
-        return isset(self::$config['defaultValues']) ? self::$config['defaultValues'] : [];
+        return self::$config['defaultValues'] ?? [];
     }
 
-    /**
-     * @return string
-     */
-    protected function getUpdatedEventClass()
+    protected function getUrlAliasFieldGenerator(): ?array
     {
-        return isset(self::$config['updateEventClass']) ? self::$config['updateEventClass'] : [];
+        return self::$config['urlAliasGenerator'] ?? null;
+    }
+
+    protected function getUpdatedEventClass(): ?string
+    {
+        return self::$config['updateEventClass'] ?? null;
+    }
+
+    protected function getUrlAliasValue(string $field, string $nameField): ?string
+    {
+        $ind = 0;
+        $name = trim($this->request->get($nameField));
+
+        if (empty($name)) {
+            return null;
+        }
+
+        while (true) {
+            $alias = Translit::translit($name) . ($ind == 0 ? '' : '-' . $ind);
+
+            $existed = $this->repository()->builder()->where($field, '=', $alias)->first();
+            if (!$existed) {
+                return $alias;
+            }
+
+            $ind = $ind + 1;
+        }
     }
 
     public function handle()
     {
         $data = $this->getDefaultValues();
+
+        $urlAliasFieldGenerator = $this->getUrlAliasFieldGenerator();
+        if (!empty($urlAliasFieldGenerator)) {
+            $urlAliasValue = $this->getUrlAliasValue($urlAliasFieldGenerator['field'], $urlAliasFieldGenerator['nameField']);
+            $data[$urlAliasFieldGenerator['field']] = $urlAliasValue;
+        }
+
         foreach ($this->fields() as $field => $requestField) {
             if (is_callable($requestField) && !is_string($requestField)) {
                 $data[$field] = call_user_func($requestField, $this->request[$field]);
