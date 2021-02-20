@@ -6,6 +6,8 @@ use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Resources\FailureResource;
 use OZiTAG\Tager\Backend\Core\Resources\SuccessResource;
 use OZiTAG\Tager\Backend\HttpCache\HttpCache;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DeleteFeature extends ModelFeature
 {
@@ -35,8 +37,10 @@ class DeleteFeature extends ModelFeature
     {
         if ($this->checkIfCanDeleteJobClass) {
             $validate = $this->run($this->checkIfCanDeleteJobClass, ['model' => $this->model()]);
+
             if ($validate !== true) {
-                return new FailureResource(is_string($validate) ? $validate : 'Error delete model');
+                $error = is_string($validate) ? $validate : 'Error delete model';
+                throw new AccessDeniedHttpException($error);
             }
         }
 
@@ -47,7 +51,7 @@ class DeleteFeature extends ModelFeature
             if ($model) {
                 $model->delete();
             } else {
-                abort(404, 'Model not found');
+                throw new NotFoundHttpException('Model not found');
             }
         } else {
             throw new \Exception('JobDeleteClass or Repository must be set');
