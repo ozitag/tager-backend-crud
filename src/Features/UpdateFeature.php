@@ -61,7 +61,7 @@ class UpdateFeature extends ModelFeature
 
         if ($this->eventClass) {
             $eventClass = $this->eventClass;
-            event(new $eventClass($model->id, $oldAttributes));
+            event(new $eventClass($model->id, $oldAttributes, $model->getAttributes()));
         }
 
         if (!empty($this->resourceClass)) {

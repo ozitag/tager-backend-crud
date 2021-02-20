@@ -12,16 +12,25 @@ class UpdateModelEvent
 
     protected array $oldAttributes;
 
-    public function __construct(int $id, array $oldAttributes = [])
+    protected array $newAttributes;
+
+    public function __construct(int $id, array $oldAttributes = [], array $newAttributes = [])
     {
         $this->id = $id;
 
         $this->oldAttributes = $oldAttributes;
+
+        $this->newAttributes = $newAttributes;
     }
 
     public function getOldAttributes(): array
     {
         return $this->oldAttributes;
+    }
+
+    public function getNewAttributes(): array
+    {
+        return $this->newAttributes;
     }
 
     public function getModelId(): int
