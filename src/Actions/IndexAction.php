@@ -2,8 +2,6 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Actions;
 
-use OZiTAG\Tager\Backend\Crud\Contracts\IAction;
-
 class IndexAction extends DefaultAction
 {
     protected ?string $getIndexActionBuilderJobClass = null;
@@ -28,49 +26,49 @@ class IndexAction extends DefaultAction
         return $this->getIndexActionBuilderJobClass;
     }
 
-    public function enablePagination(): IAction
+    public function enablePagination(): static
     {
         $this->hasPagination = true;
         return $this;
     }
 
-    public function enableSearchByQuery(): IAction
+    public function enableSearchByQuery(): static
     {
         $this->hasSearchByQuery = true;
         return $this;
     }
 
-    public function disablePagination(): IAction
+    public function disablePagination(): static
     {
         $this->hasPagination = false;
         return $this;
     }
 
-    public function disableSearchByQuery(): IAction
+    public function disableSearchByQuery(): static
     {
         $this->hasSearchByQuery = false;
         return $this;
     }
 
-    public function enableFilter(): IAction
+    public function enableFilter(): static
     {
         $this->hasFilter = true;
         return $this;
     }
 
-    public function enableTree(): IAction
+    public function enableTree(): static
     {
         $this->isTree = true;
         return $this;
     }
 
-    public function setResource(string $resourceClass): IAction
+    public function setResource(string $resourceClass): static
     {
         $this->resourceClass = $resourceClass;
         return $this;
     }
 
-    public function setResourceFields(array $resourceFields): IAction
+    public function setResourceFields(array $resourceFields): static
     {
         $this->resourceFields = $resourceFields;
         return $this;
