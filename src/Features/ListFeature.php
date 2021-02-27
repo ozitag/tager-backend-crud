@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
+use OZiTAG\Tager\Backend\Core\Repositories\IFilterable;
+use OZiTAG\Tager\Backend\Core\Repositories\ISearchable;
 use OZiTAG\Tager\Backend\Core\Resources\ResourceCollection;
 use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
 use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceFieldsJob;
@@ -28,7 +30,8 @@ class ListFeature extends Feature
         $resourceFields,
         IndexAction $action,
         bool $isAdmin
-    ) {
+    )
+    {
         $this->repository = $repository;
         $this->resourceClassName = $resourceClassName;
         $this->resourceFields = $resourceFields;
@@ -61,11 +64,11 @@ class ListFeature extends Feature
         if ($getIndexActionBuilderJobClass) {
             $builder = $this->run($getIndexActionBuilderJobClass);
 
-            if ($this->hasQuery) {
+            if ($this->hasQuery && $this->repository instanceof ISearchable) {
                 $builder = $this->repository->searchByQuery($query, $builder);
             }
 
-            if ($this->hasFilter) {
+            if ($this->hasFilter && $this->repository instanceof IFilterable) {
                 $builder = $this->repository->filter($filter, $builder);
             }
 
