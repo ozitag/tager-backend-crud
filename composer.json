@@ -14,8 +14,7 @@
     "require": {
         "ozitag/tager-backend-core": "^1.5",
         "ozitag/tager-backend-http-cache": "^1.0",
-        "ozitag/tager-backend-files": "^1.0",
-        "ozerich/laravel-filestorage-db": "^0.3"
+        "ozitag/tager-backend-files": "^1.0"
     },
     "autoload": {
         "psr-4": {
