@@ -19,7 +19,7 @@ class CrudFormWithSeoRequest extends CrudFormRequest
         return [
             'pageTitle' => 'nullable|string',
             'pageDescription' => 'nullable|string',
-            'openGraphImage' => ['nullable', 'integer', new FileRule()],
+            'openGraphImage' => ['nullable', new FileRule()],
         ];
     }
 }
