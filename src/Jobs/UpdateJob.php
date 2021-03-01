@@ -2,6 +2,8 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Jobs;
 
+use Ozerich\FileStorage\Storage;
+
 class UpdateJob extends BaseCreateUpdateJob
 {
     protected static $config = [];
@@ -23,7 +25,14 @@ class UpdateJob extends BaseCreateUpdateJob
             if (is_callable($requestField) && !is_string($requestField)) {
                 $data[$field] = call_user_func($requestField, $this->request[$field]);
             } else {
-                $data[$field] = $this->request[$requestField];
+                $parts = explode(':', $requestField);
+                $data[$field] = $this->request[$parts[0]];
+
+                if (count($parts) == 2) {
+                    if($parts[1] === 'file' && is_string($parts[0])){
+                        $data[$field] = Storage::fromUUIDtoId($data[$field]);
+                    }
+                }
             }
         }
 
