@@ -8,7 +8,7 @@ class IndexAction extends DefaultAction
 
     protected bool $hasSearchByQuery = true;
     protected bool $hasPagination = true;
-    protected bool $hasFilter = false;
+
     protected bool $isTree = false;
 
     public ?string $resourceClass = null;
@@ -47,12 +47,6 @@ class IndexAction extends DefaultAction
     public function disableSearchByQuery(): static
     {
         $this->hasSearchByQuery = false;
-        return $this;
-    }
-
-    public function enableFilter(): static
-    {
-        $this->hasFilter = true;
         return $this;
     }
 

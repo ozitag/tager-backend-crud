@@ -21,7 +21,6 @@ class ListFeature extends Feature
     private IndexAction $action;
     protected $hasPagination = false;
     protected $hasQuery = false;
-    protected $hasFilter = false;
     protected $isAdmin = false;
 
     public function __construct(
@@ -39,7 +38,6 @@ class ListFeature extends Feature
         $this->isAdmin = $isAdmin;
         $this->hasPagination = $this->action->get('hasPagination');
         $this->hasQuery = $this->action->get('hasSearchByQuery');
-        $this->hasFilter = $this->action->get('hasFilter');
     }
 
     public function handle(Request $request)
@@ -52,13 +50,11 @@ class ListFeature extends Feature
             $this->registerQueryRequest();
         }
 
-        if ($this->hasQuery) {
-            $this->registerFilterRequest();
-        }
+        $this->registerFilterRequest();
 
         $query = $this->hasQuery ? $request->get('query') : null;
 
-        $filter = $this->hasFilter ? $request->get('filter') : [];
+        $filter = $request->get('filter');
 
         $getIndexActionBuilderJobClass = $this->action->getIndexActionBuilderJobClass();
         if ($getIndexActionBuilderJobClass) {
@@ -68,7 +64,7 @@ class ListFeature extends Feature
                 $builder = $this->repository->searchByQuery($query, $builder);
             }
 
-            if ($this->hasFilter && $this->repository instanceof IFilterable) {
+            if ($this->repository instanceof IFilterable) {
                 $builder = $this->repository->filter($filter, $builder);
             }
 
