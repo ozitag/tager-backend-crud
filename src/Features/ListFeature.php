@@ -8,7 +8,9 @@ use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Core\Repositories\IFilterable;
 use OZiTAG\Tager\Backend\Core\Repositories\ISearchable;
+use OZiTAG\Tager\Backend\Core\Repositories\ISortable;
 use OZiTAG\Tager\Backend\Core\Resources\ResourceCollection;
+use OZiTAG\Tager\Backend\Core\Structures\SortAttributeCollection;
 use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
 use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceFieldsJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
@@ -68,6 +70,11 @@ class ListFeature extends Feature
                 $builder = $this->repository->filter($filter, $builder);
             }
 
+            if ($this->repository instanceof ISortable) {
+                $sortAttributeCollection = SortAttributeCollection::loadFromRequest($request);
+                $builder = $this->repository->sort($sortAttributeCollection, $builder);
+            }
+
             if (!$builder) {
                 $items = new Collection();
             } else if (!$this->hasPagination) {
@@ -78,7 +85,7 @@ class ListFeature extends Feature
         } else {
             $items = $this->action->get('isTree')
                 ? $this->repository->toFlatTree($this->hasPagination, $query, $filter)
-                : $this->repository->get($this->hasPagination, $query, $filter);
+                : $this->repository->get($this->hasPagination, $query, $filter, SortAttributeCollection::loadFromRequest($request));
         }
 
         if (!$this->resourceClassName) {
