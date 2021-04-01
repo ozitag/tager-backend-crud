@@ -21,11 +21,11 @@ class UpdateFeature extends ModelFeature
 
     private ?array $resourceFields;
 
-    private ?string $cacheNamespace;
+    private string|array|null $cacheNamespace;
 
     private ?string $eventClass;
 
-    private bool $isAdmin = false;
+    private bool $isAdmin;
 
     public function __construct($id, $getByidJobClass, EloquentRepository $repository, $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $eventClass, $isAdmin)
     {

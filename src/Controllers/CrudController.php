@@ -52,7 +52,7 @@ class CrudController extends Controller
 
     private ?array $fullResourceFields = null;
 
-    private ?string $cacheNamespace = null;
+    private string|array|null $cacheNamespace = null;
 
 
     // ***** Actions ****** //
@@ -76,7 +76,7 @@ class CrudController extends Controller
         $this->getModelJobClass = $getModelJobClass;
     }
 
-    public function setCacheNamespace(string $namespace)
+    public function setCacheNamespace(string|array $namespace)
     {
         $this->cacheNamespace = $namespace;
     }
