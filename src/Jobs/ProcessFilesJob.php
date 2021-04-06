@@ -2,9 +2,11 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Jobs;
 
+use Ozerich\FileStorage\Exceptions\InvalidFileForScenarioException;
 use Ozerich\FileStorage\Storage;
 use OZiTAG\Tager\Backend\Core\Jobs\Job;
 use OZiTAG\Tager\Backend\Crud\Requests\CrudFormRequest;
+use OZiTAG\Tager\Backend\Validation\Facades\Validation;
 
 class ProcessFilesJob extends Job
 {
@@ -63,15 +65,23 @@ class ProcessFilesJob extends Job
 
             if ($value) {
                 if (is_array($value)) {
-                    foreach ($value as $item) {
-                        if ($innerField && is_array($item) && isset($item[$innerField])) {
-                            $storage->setFileScenario($item[$innerField], $scenario);
-                        } else {
-                            $storage->setFileScenario($item, $scenario);
+                    foreach ($value as $ind => $item) {
+                        try {
+                            if ($innerField && is_array($item) && isset($item[$innerField])) {
+                                $storage->setFileScenario($item[$innerField], $scenario);
+                            } else {
+                                $storage->setFileScenario($item, $scenario);
+                            }
+                        } catch (InvalidFileForScenarioException $exception) {
+                            Validation::throw($field . '.' . $ind, $exception->getMessage());
                         }
                     }
                 } else {
-                    $storage->setFileScenario($value, $scenario);
+                    try {
+                        $storage->setFileScenario($value, $scenario);
+                    } catch (InvalidFileForScenarioException $exception) {
+                        Validation::throw($field, $exception->getMessage());
+                    }
                 }
             }
         }
