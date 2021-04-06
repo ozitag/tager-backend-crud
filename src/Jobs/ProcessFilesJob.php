@@ -73,7 +73,10 @@ class ProcessFilesJob extends Job
                                 $storage->setFileScenario($item, $scenario);
                             }
                         } catch (InvalidFileForScenarioException $exception) {
-                            Validation::throw($field . '.' . $ind, $exception->getMessage());
+                            Validation::throw(
+                                $field . '.' . $ind . ($innerField ? '.' . $innerField : ''),
+                                $exception->getMessage()
+                            );
                         }
                     }
                 } else {
