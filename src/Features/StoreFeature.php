@@ -53,7 +53,7 @@ class StoreFeature extends Feature
 
         if ($this->eventClass) {
             $eventClass = $this->eventClass;
-            event(new $eventClass($model->id));
+            event(new $eventClass($model->id, null, $model->getAttributes()));
         }
 
         if (!empty($this->resourceClass)) {

@@ -84,7 +84,7 @@ class StoreJob extends BaseCreateUpdateJob
 
         $updatedEventClass = $this->getUpdatedEventClass();
         if ($updatedEventClass) {
-            $event = new $updatedEventClass($model);
+            $event = new $updatedEventClass($model, null, $model->getAttributes());
             event($event);
         }
 
