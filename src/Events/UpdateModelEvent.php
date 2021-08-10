@@ -10,11 +10,11 @@ class UpdateModelEvent
 {
     protected int $id;
 
-    protected array $oldAttributes;
+    protected ?array $oldAttributes;
 
     protected array $newAttributes;
 
-    public function __construct(int $id, array $oldAttributes = [], array $newAttributes = [])
+    public function __construct(int $id, ?array $oldAttributes = null, array $newAttributes = [])
     {
         $this->id = $id;
 
@@ -23,7 +23,7 @@ class UpdateModelEvent
         $this->newAttributes = $newAttributes;
     }
 
-    public function getOldAttributes(): array
+    public function getOldAttributes(): ?array
     {
         return $this->oldAttributes;
     }
