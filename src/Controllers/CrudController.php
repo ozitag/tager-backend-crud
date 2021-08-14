@@ -4,6 +4,7 @@ namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
 use OZiTAG\Tager\Backend\Core\Controllers\Controller;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
+use OZiTAG\Tager\Backend\Crud\Actions\CountAction;
 use OZiTAG\Tager\Backend\Crud\Actions\DefaultAction;
 use OZiTAG\Tager\Backend\Crud\Actions\DeleteAction;
 use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
@@ -59,6 +60,8 @@ class CrudController extends Controller
 
     protected ?IndexAction $indexAction = null;
 
+    protected ?CountAction $countAction = null;
+
     protected ?StoreOrUpdateAction $storeAction = null;
 
     protected ?StoreOrUpdateAction $updateAction = null;
@@ -86,6 +89,11 @@ class CrudController extends Controller
     public function setIndexAction(IndexAction $action)
     {
         $this->indexAction = $action;
+    }
+
+    public function setCountAction(CountAction $action)
+    {
+        $this->countAction = $action;
     }
 
     public function setDeleteAction(DeleteAction $action)
@@ -210,7 +218,8 @@ class CrudController extends Controller
         if ($this->hasCountAction) {
             $result['count'] = [
                 CountFeature::class,
-                $this->repository
+                $this->repository,
+                $this->countAction ? $this->countAction->getCountBuilderJobClass() : null
             ];
         }
 

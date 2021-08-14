@@ -2,25 +2,34 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Resources\Json\JsonResource;
 use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
-use OZiTAG\Tager\Backend\Crud\Contracts\IRepositoryCrudTree;
-use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
 
 class CountFeature extends Feature
 {
-    private $repository;
+    protected EloquentRepository $repository;
 
-    public function __construct(EloquentRepository $repository)
+    protected ?string $getBuilderJobClass;
+
+    public function __construct(EloquentRepository $repository, ?string $getBuilderJobClass = null)
     {
         $this->repository = $repository;
+
+        $this->getBuilderJobClass = $getBuilderJobClass;
     }
 
     public function handle()
     {
+        $builder = $this->repository;
+
+        if (!empty($this->getBuilderJobClass)) {
+            $builder = $this->run($this->getBuilderJobClass);
+        }
+
         return new JsonResource([
-            'count' => (int)$this->repository->count()
+            'count' => (int)$builder->count()
         ]);
     }
 }
