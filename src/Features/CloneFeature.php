@@ -9,6 +9,7 @@ use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceFieldsJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
+use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 
 class CloneFeature extends ModelFeature
 {
@@ -36,7 +37,7 @@ class CloneFeature extends ModelFeature
         $this->isAdmin = $isAdmin;
     }
 
-    public function handle()
+    public function handle(HttpCache $httpCache)
     {
         $model = $this->model();
 
@@ -44,6 +45,9 @@ class CloneFeature extends ModelFeature
             'model' => $model
         ]);
 
+        if ($this->cacheNamespace) {
+            $httpCache->clear($this->cacheNamespace);
+        }
 
         if (!empty($this->resourceClass)) {
             $resourceClass = $this->resourceClass;
