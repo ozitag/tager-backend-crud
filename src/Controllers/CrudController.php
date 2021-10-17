@@ -4,11 +4,13 @@ namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
 use OZiTAG\Tager\Backend\Core\Controllers\Controller;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
+use OZiTAG\Tager\Backend\Crud\Actions\CloneAction;
 use OZiTAG\Tager\Backend\Crud\Actions\CountAction;
 use OZiTAG\Tager\Backend\Crud\Actions\DefaultAction;
 use OZiTAG\Tager\Backend\Crud\Actions\DeleteAction;
 use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
 use OZiTAG\Tager\Backend\Crud\Actions\StoreOrUpdateAction;
+use OZiTAG\Tager\Backend\Crud\Features\CloneFeature;
 use OZiTAG\Tager\Backend\Crud\Features\CountFeature;
 use OZiTAG\Tager\Backend\Crud\Features\DeleteFeature;
 use OZiTAG\Tager\Backend\Crud\Features\ListFeature;
@@ -66,6 +68,8 @@ class CrudController extends Controller
 
     protected ?StoreOrUpdateAction $updateAction = null;
 
+    protected ?CloneAction $cloneAction = null;
+
     protected ?DeleteAction $deleteAction = null;
 
     protected array $customActions = [];
@@ -114,6 +118,11 @@ class CrudController extends Controller
     protected function setStoreAndUpdateAction(StoreOrUpdateAction $action)
     {
         $this->updateAction = $this->storeAction = $action;
+    }
+
+    protected function setCloneAction(CloneAction $action)
+    {
+        $this->cloneAction = $action;
     }
 
     protected function addAction($actionName, DefaultAction $action)
@@ -223,6 +232,19 @@ class CrudController extends Controller
             ];
         }
 
+        if ($this->cloneAction) {
+            $result['clone'] = [
+                CloneFeature::class,
+                $this->getModelJobClass,
+                $this->repository,
+                $this->cloneAction->getCopyEntityJobClass(),
+                $this->fullResourceClass,
+                $this->fullResourceFields,
+                $this->cacheNamespace,
+                $this->isAdmin
+            ];
+        }
+
         if ($this->hasStoreAction && $this->storeAction) {
             if (!$this->storeAction->getJobClass()) {
                 if ($this->storeAction->getJobParams()) {
@@ -309,6 +331,11 @@ class CrudController extends Controller
     protected function update($id)
     {
         return $this->serve('update', ['id' => $id]);
+    }
+
+    protected function clone($id)
+    {
+        return $this->serve('clone', ['id' => $id]);
     }
 
     public function delete($id)
