@@ -9,6 +9,7 @@ use OZiTAG\Tager\Backend\Crud\Actions\CountAction;
 use OZiTAG\Tager\Backend\Crud\Actions\DefaultAction;
 use OZiTAG\Tager\Backend\Crud\Actions\DeleteAction;
 use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
+use OZiTAG\Tager\Backend\Crud\Actions\MoveAction;
 use OZiTAG\Tager\Backend\Crud\Actions\StoreOrUpdateAction;
 use OZiTAG\Tager\Backend\Crud\Features\CloneFeature;
 use OZiTAG\Tager\Backend\Crud\Features\CountFeature;
@@ -61,6 +62,8 @@ class CrudController extends Controller
     // ***** Actions ****** //
 
     protected ?IndexAction $indexAction = null;
+
+    protected ?MoveAction $moveAction = null;
 
     protected ?CountAction $countAction = null;
 
@@ -220,7 +223,8 @@ class CrudController extends Controller
                 MoveFeature::class,
                 $this->getModelJobClass,
                 $this->repository,
-                $this->cacheNamespace
+                $this->cacheNamespace,
+                $this->moveAction ? $this->moveAction->getEventClass() : null,
             ];
         }
 

@@ -17,13 +17,16 @@ class MoveFeature extends ModelFeature
 
     private $cacheNamespace;
 
-    public function __construct($id, $direction, $jobGetByIdClass, EloquentRepository $repository, $cacheNamespace)
+    private $eventClass;
+
+    public function __construct($id, $direction, $jobGetByIdClass, EloquentRepository $repository, $cacheNamespace, ?string $eventClass)
     {
         parent::__construct($id, $jobGetByIdClass, $repository);
 
         $this->direction = $direction;
         $this->repository = $repository;
         $this->cacheNamespace = $cacheNamespace;
+        $this->eventClass = $eventClass;
     }
 
     public function handle(HttpCache $httpCache)
@@ -74,6 +77,11 @@ class MoveFeature extends ModelFeature
 
         if ($this->cacheNamespace) {
             $httpCache->clear($this->cacheNamespace);
+        }
+
+        if($this->eventClass){
+            $eventClass = $this->eventClass;
+            event(new $eventClass);
         }
 
         return new SuccessResource();
