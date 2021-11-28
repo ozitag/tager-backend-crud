@@ -98,6 +98,11 @@ class CrudController extends Controller
         $this->indexAction = $action;
     }
 
+    public function setMoveAction(MoveAction $action)
+    {
+        $this->moveAction = $action;
+    }
+
     public function setCountAction(CountAction $action)
     {
         $this->countAction = $action;
