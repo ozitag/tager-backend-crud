@@ -32,7 +32,7 @@ class UpdateJob extends BaseCreateUpdateJob
                     if ($parts[1] === 'file' && is_string($parts[0])) {
                         $data[$field] = Storage::fromUUIDtoId($data[$field]);
                     } else if ($parts[1] === 'json' && is_string($parts[0])) {
-                        $data[$field] = $data[$field] ? json_encode($data['field']) : null;
+                        $data[$field] = $data[$field] ? json_encode($data[$field]) : null;
                     }
                 }
 
