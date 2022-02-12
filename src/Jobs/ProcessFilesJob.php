@@ -54,6 +54,11 @@ class ProcessFilesJob extends Job
     {
         $fileScenarios = $this->request->fileScenarios();
         foreach ($fileScenarios as $field => $scenario) {
+
+            if ($scenario instanceof \BackedEnum) {
+                $scenario = $scenario->value;
+            }
+
             $pointPos = strpos($field, '.');
             $innerField = null;
             if ($pointPos !== false) {
