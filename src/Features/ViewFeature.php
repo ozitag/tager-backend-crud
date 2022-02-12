@@ -5,7 +5,6 @@ namespace OZiTAG\Tager\Backend\Crud\Features;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceFieldsJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
-use OZiTAG\Tager\Backend\Files\Enums\TagerFileThumbnail;
 
 class ViewFeature extends ModelFeature
 {

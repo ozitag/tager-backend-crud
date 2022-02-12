@@ -8,7 +8,6 @@ use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceFieldsJob;
 use OZiTAG\Tager\Backend\Crud\Jobs\ProcessFilesJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
-use OZiTAG\Tager\Backend\Files\Enums\TagerFileThumbnail;
 use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 
 class UpdateFeature extends ModelFeature

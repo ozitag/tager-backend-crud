@@ -4,8 +4,6 @@ namespace OZiTAG\Tager\Backend\Crud\Jobs;
 
 use Ozerich\FileStorage\Storage;
 use OZiTAG\Tager\Backend\Core\Jobs\Job;
-use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
-use OZiTAG\Tager\Backend\Files\Enums\TagerFileThumbnail;
 
 class GetModelResourceFieldsJob extends Job
 {
@@ -31,10 +29,10 @@ class GetModelResourceFieldsJob extends Job
 
             $fieldParts = explode(':', $resourceField);
             if (count($fieldParts) == 3 && $fieldParts[1] == 'file' && $fieldParts[2] == 'url') {
-                return $resourceField . ':' . TagerFileThumbnail::AdminList;
+                return $resourceField . ':tager-admin-list';
             }
             if (count($fieldParts) == 3 && $fieldParts[1] == 'file' && $fieldParts[2] == 'model') {
-                return $resourceField . ':' . TagerFileThumbnail::AdminView;
+                return $resourceField . ':tager-admin-view';
             }
 
             return $resourceField;
