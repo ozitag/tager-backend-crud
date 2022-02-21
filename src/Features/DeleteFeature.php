@@ -15,8 +15,6 @@ class DeleteFeature extends ModelFeature
 
     private $checkIfCanDeleteJobClass;
 
-    private $repository;
-
     private $cacheNamespace;
 
     private $eventClass;
@@ -27,8 +25,6 @@ class DeleteFeature extends ModelFeature
 
         $this->jobDeleteClass = $jobDeleteClass;
         $this->checkIfCanDeleteJobClass = $checkIfCanDeleteJobClass;
-
-        $this->repository = $repository;
         $this->cacheNamespace = $cacheNamespace;
         $this->eventClass = $eventClass;
     }
