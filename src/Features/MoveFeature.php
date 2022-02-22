@@ -13,13 +13,13 @@ class MoveFeature extends ModelFeature
 {
     private $direction;
 
-    private $repository;
+    protected ?EloquentRepository $repository;
 
     private $cacheNamespace;
 
     private $eventClass;
 
-    public function __construct($id, $direction, $jobGetByIdClass, EloquentRepository $repository, $cacheNamespace, ?string $eventClass)
+    public function __construct($id, $direction, $jobGetByIdClass, ?EloquentRepository $repository, $cacheNamespace, ?string $eventClass)
     {
         parent::__construct($id, $jobGetByIdClass, $repository);
 

@@ -2,9 +2,6 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Resources\Json\JsonResource;
-use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceFieldsJob;
@@ -13,7 +10,7 @@ use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 
 class CloneFeature extends ModelFeature
 {
-    protected EloquentRepository $repository;
+    protected ?EloquentRepository $repository;
     protected ?string $cloneModelJobClass;
     protected ?string $resourceClass;
     protected ?array $resourceFields;
