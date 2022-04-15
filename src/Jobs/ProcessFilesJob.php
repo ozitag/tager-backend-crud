@@ -6,7 +6,7 @@ use Ozerich\FileStorage\Exceptions\InvalidFileForScenarioException;
 use Ozerich\FileStorage\Storage;
 use OZiTAG\Tager\Backend\Core\Jobs\Job;
 use OZiTAG\Tager\Backend\Crud\Requests\CrudFormRequest;
-use OZiTAG\Tager\Backend\Validation\Facades\Validation;
+use OZiTAG\Tager\Backend\Core\Validation\Facades\Validation;
 
 class ProcessFilesJob extends Job
 {
