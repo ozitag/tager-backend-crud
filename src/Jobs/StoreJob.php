@@ -68,8 +68,10 @@ class StoreJob extends BaseCreateUpdateJob
                 $data[$field] = $this->request[$parts[0]];
 
                 if (count($parts) == 2) {
-                    if($parts[1] === 'file' && is_string($parts[0])){
+                    if ($parts[1] === 'file' && is_string($parts[0])) {
                         $data[$field] = Storage::fromUUIDtoId($data[$field]);
+                    }  else if ($parts[1] === 'json' && is_string($parts[0])) {
+                        $data[$field] = $data[$field] ? json_encode($data[$field]) : null;
                     }
                 }
             }
