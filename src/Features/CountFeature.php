@@ -22,7 +22,7 @@ class CountFeature extends Feature
 
     public function handle()
     {
-        $builder = $this->repository;
+        $builder = $this->repository->builder();
 
         if (!empty($this->getBuilderJobClass)) {
             $builder = $this->run($this->getBuilderJobClass);
