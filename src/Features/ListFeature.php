@@ -21,16 +21,19 @@ class ListFeature extends Feature
     private $resourceClassName;
     private $resourceFields;
     private IndexAction $action;
-    protected $hasPagination = false;
-    protected $hasQuery = false;
+
+    protected bool $hasPagination = false;
+    protected bool $hasQuery = false;
+    protected bool $hasSort = false;
+
     protected $isAdmin = false;
 
     public function __construct(
         EloquentRepository $repository,
-        $resourceClassName,
-        $resourceFields,
-        IndexAction $action,
-        bool $isAdmin
+                           $resourceClassName,
+                           $resourceFields,
+        IndexAction        $action,
+        bool               $isAdmin
     )
     {
         $this->repository = $repository;
@@ -40,6 +43,7 @@ class ListFeature extends Feature
         $this->isAdmin = $isAdmin;
         $this->hasPagination = $this->action->get('hasPagination');
         $this->hasQuery = $this->action->get('hasSearchByQuery');
+        $this->hasSort = $this->action->get('hasSort');
     }
 
     public function handle(Request $request)
@@ -52,11 +56,16 @@ class ListFeature extends Feature
             $this->registerQueryRequest();
         }
 
+        if ($this->hasSort) {
+            $this->registerSortRequest();
+        }
+
         $this->registerFilterRequest();
 
         $query = $this->hasQuery ? $request->get('query') : null;
 
         $filter = $request->get('filter');
+        $sort = $request->get('sort');
 
         $getIndexActionBuilderJobClass = $this->action->getIndexActionBuilderJobClass();
         if ($getIndexActionBuilderJobClass) {
@@ -71,8 +80,7 @@ class ListFeature extends Feature
             }
 
             if ($this->repository instanceof ISortable) {
-                $sortAttributeCollection = SortAttributeCollection::loadFromRequest($request);
-                $builder = $this->repository->sort($sortAttributeCollection, $builder);
+                $builder = $this->repository->sort($sort, $builder);
             }
 
             if (!$builder) {
@@ -84,8 +92,8 @@ class ListFeature extends Feature
             }
         } else {
             $items = $this->action->get('isTree')
-                ? $this->repository->toFlatTree($this->hasPagination, $query, $filter)
-                : $this->repository->get($this->hasPagination, $query, $filter, SortAttributeCollection::loadFromRequest($request));
+                ? $this->repository->toFlatTree($this->hasPagination, $query, $filter, $sort)
+                : $this->repository->get($this->hasPagination, $query, $filter, $sort);
         }
 
         if (!$this->resourceClassName) {

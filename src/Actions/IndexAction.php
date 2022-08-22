@@ -7,7 +7,10 @@ class IndexAction extends DefaultAction
     protected ?string $getIndexActionBuilderJobClass = null;
 
     protected bool $hasSearchByQuery = true;
+
     protected bool $hasPagination = true;
+
+    protected bool $hasSort = true;
 
     protected bool $isTree = false;
 
@@ -47,6 +50,12 @@ class IndexAction extends DefaultAction
     public function disableSearchByQuery(): static
     {
         $this->hasSearchByQuery = false;
+        return $this;
+    }
+
+    public function disableSort(): static
+    {
+        $this->hasSort = false;
         return $this;
     }
 
