@@ -14,6 +14,8 @@ class IndexAction extends DefaultAction
 
     protected bool $isTree = false;
 
+    protected array $with = [];
+
     public ?string $resourceClass = null;
     public ?array $resourceFields = null;
 
@@ -74,6 +76,17 @@ class IndexAction extends DefaultAction
     public function setResourceFields(array $resourceFields): static
     {
         $this->resourceFields = $resourceFields;
+        return $this;
+    }
+
+    public function getWith(): array
+    {
+        return $this->with;
+    }
+
+    public function with($relations = []): static
+    {
+        $this->with = $relations;
         return $this;
     }
 }

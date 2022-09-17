@@ -71,16 +71,20 @@ class ListFeature extends Feature
         if ($getIndexActionBuilderJobClass) {
             $builder = $this->run($getIndexActionBuilderJobClass);
 
-            if ($this->hasQuery && $this->repository instanceof ISearchable) {
+            if ($query !== null && $this->hasQuery && $this->repository instanceof ISearchable) {
                 $builder = $this->repository->searchByQuery($query, $builder);
             }
 
-            if ($this->repository instanceof IFilterable) {
+            if ($filter && $this->repository instanceof IFilterable) {
                 $builder = $this->repository->filter($filter, $builder);
             }
 
-            if ($this->repository instanceof ISortable) {
+            if ($sort && $this->repository instanceof ISortable) {
                 $builder = $this->repository->sort($sort, $builder);
+            }
+
+            if(!empty($this->action->getWith())){
+                $builder->with($this->action->getWith());
             }
 
             if (!$builder) {
