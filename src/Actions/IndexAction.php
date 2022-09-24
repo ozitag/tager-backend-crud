@@ -100,7 +100,7 @@ class IndexAction extends DefaultAction
     public function getQueryBuilder(): ?Builder
     {
         if (is_string($this->queryBuilder)) {
-            return dispatch_sync($this->queryBuilder);
+            return dispatch_sync(new $this->queryBuilder());
         } else if (is_callable($this->queryBuilder)) {
             return call_user_func($this->queryBuilder);
         } else if ($this->queryBuilder instanceof Builder) {
