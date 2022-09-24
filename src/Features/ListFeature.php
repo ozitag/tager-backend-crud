@@ -67,10 +67,8 @@ class ListFeature extends Feature
         $filter = $request->get('filter');
         $sort = $request->get('sort');
 
-        $getIndexActionBuilderJobClass = $this->action->getIndexActionBuilderJobClass();
-        if ($getIndexActionBuilderJobClass) {
-            $builder = $this->run($getIndexActionBuilderJobClass);
-
+        $builder = $this->action->getQueryBuilder();
+        if ($builder) {
             if ($query !== null && $this->hasQuery && $this->repository instanceof ISearchable) {
                 $builder = $this->repository->searchByQuery($query, $builder);
             }
@@ -83,7 +81,7 @@ class ListFeature extends Feature
                 $builder = $this->repository->sort($sort, $builder);
             }
 
-            if(!empty($this->action->getWith())){
+            if (!empty($this->action->getWith())) {
                 $builder->with($this->action->getWith());
             }
 
@@ -95,9 +93,11 @@ class ListFeature extends Feature
                 $items = $this->repository->paginate($builder);
             }
         } else {
+            $baseBuilder = $this->isAdmin ? $this->repository->adminBuilder() : $this->repository->builder();
+
             $items = $this->action->get('isTree')
-                ? $this->repository->toFlatTree($this->hasPagination, $query, $filter, $sort)
-                : $this->repository->get($this->hasPagination, $query, $filter, $sort);
+                ? $this->repository->toFlatTree($baseBuilder, $this->hasPagination, $query, $filter, $sort)
+                : $this->repository->get($baseBuilder, $this->hasPagination, $query, $filter, $sort);
         }
 
         if (!$this->resourceClassName) {

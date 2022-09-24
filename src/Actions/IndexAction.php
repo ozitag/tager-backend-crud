@@ -2,33 +2,34 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Actions;
 
+use Doctrine\DBAL\Query\QueryBuilder;
+use Illuminate\Database\Eloquent\Builder;
+
 class IndexAction extends DefaultAction
 {
-    protected ?string $getIndexActionBuilderJobClass = null;
-
     protected bool $hasSearchByQuery = true;
 
     protected bool $hasPagination = true;
 
     protected bool $hasSort = true;
 
+    protected mixed $queryBuilder = null;
+
     protected bool $isTree = false;
 
     protected array $with = [];
 
     public ?string $resourceClass = null;
+
     public ?array $resourceFields = null;
 
-    public function __construct(?string $getIndexBuilderJobClass = null)
+    public function __construct(?string $getBuilderJobClass = null)
     {
         parent::__construct();
 
-        $this->getIndexActionBuilderJobClass = $getIndexBuilderJobClass;
-    }
-
-    public function getIndexActionBuilderJobClass(): ?string
-    {
-        return $this->getIndexActionBuilderJobClass;
+        if ($getBuilderJobClass) {
+            $this->setQueryBuilder($getBuilderJobClass);
+        }
     }
 
     public function enablePagination(): static
@@ -79,14 +80,33 @@ class IndexAction extends DefaultAction
         return $this;
     }
 
+    public function with($relations = []): static
+    {
+        $this->with = $relations;
+        return $this;
+    }
+
     public function getWith(): array
     {
         return $this->with;
     }
 
-    public function with($relations = []): static
+    public function setQueryBuilder(mixed $queryBuilder): static
     {
-        $this->with = $relations;
+        $this->queryBuilder = $queryBuilder;
         return $this;
+    }
+
+    public function getQueryBuilder(): ?Builder
+    {
+        if (is_string($this->queryBuilder)) {
+            return dispatch_sync($this->queryBuilder);
+        } else if (is_callable($this->queryBuilder)) {
+            return call_user_func($this->queryBuilder);
+        } else if ($this->queryBuilder instanceof Builder) {
+            return $this->queryBuilder;
+        } else {
+            return null;
+        }
     }
 }
