@@ -95,6 +95,10 @@ class ListFeature extends Feature
         } else {
             $baseBuilder = $this->isAdmin ? $this->repository->adminBuilder() : $this->repository->builder();
 
+            if (!empty($this->action->getWith())) {
+                $baseBuilder->with($this->action->getWith());
+            }
+
             $items = $this->action->get('isTree')
                 ? $this->repository->toFlatTree($baseBuilder, $this->hasPagination, $query, $filter, $sort)
                 : $this->repository->get($baseBuilder, $this->hasPagination, $query, $filter, $sort);
