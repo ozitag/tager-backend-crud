@@ -216,10 +216,10 @@ class CrudController extends Controller
                 DeleteFeature::class,
                 $this->getModelJobClass,
                 $this->repository,
-                $this->deleteAction ? $this->deleteAction->getCanDeleteJobClass() : null,
+                $this->deleteAction ? $this->deleteAction->getValidator() : null,
                 $this->deleteModelJobClass,
                 $this->cacheNamespace,
-                $this->deleteAction ? $this->deleteAction->getDeletedModelEvent() : null
+                $this->deleteAction ? $this->deleteAction->getEventName() : null
             ];
         }
 

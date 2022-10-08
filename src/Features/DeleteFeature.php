@@ -11,34 +11,37 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DeleteFeature extends ModelFeature
 {
-    private $jobDeleteClass;
-
-    private $checkIfCanDeleteJobClass;
-
-    private $cacheNamespace;
-
-    private $eventClass;
-
-    public function __construct($id, $jobGetByIdClass, $repository, $checkIfCanDeleteJobClass, $jobDeleteClass, $cacheNamespace, $eventClass)
+    public function __construct($id, $jobGetByIdClass, $repository,
+                                protected mixed $validator,
+                                protected ?string $jobDeleteClass,
+                                protected ?string $cacheNamespace,
+                                protected ?string $eventName)
     {
         parent::__construct($id, $jobGetByIdClass, $repository);
 
-        $this->jobDeleteClass = $jobDeleteClass;
-        $this->checkIfCanDeleteJobClass = $checkIfCanDeleteJobClass;
-        $this->cacheNamespace = $cacheNamespace;
-        $this->eventClass = $eventClass;
+    }
+
+    private function validate()
+    {
+        if (!$this->validator) return;
+
+        if (is_string($this->validator)) {
+            $validateResult = $this->run($this->validator, ['model' => $this->model()]);
+        } else if (is_callable($this->validator)) {
+            $validateResult = call_user_func($this->validator, $this->model());
+        } else {
+            throw new \Exception('Validator should be job class or callable');
+        }
+
+        if ($validateResult !== true) {
+            $error = is_string($validateResult) ? $validateResult : 'Model can\'t be deleted';
+            throw new AccessDeniedHttpException($error);
+        }
     }
 
     public function handle(HttpCache $httpCache)
     {
-        if ($this->checkIfCanDeleteJobClass) {
-            $validate = $this->run($this->checkIfCanDeleteJobClass, ['model' => $this->model()]);
-
-            if ($validate !== true) {
-                $error = is_string($validate) ? $validate : 'Error delete model';
-                throw new AccessDeniedHttpException($error);
-            }
-        }
+        $this->validate();
 
         if ($this->jobDeleteClass) {
             $this->run($this->jobDeleteClass, ['model' => $this->model()]);
@@ -57,8 +60,8 @@ class DeleteFeature extends ModelFeature
             $httpCache->clear($this->cacheNamespace);
         }
 
-        if ($this->eventClass) {
-            $eventClass = $this->eventClass;
+        if ($this->eventName) {
+            $eventClass = $this->eventName;
             event(new $eventClass($model->getAttributes()));
         }
 

@@ -4,30 +4,42 @@ namespace OZiTAG\Tager\Backend\Crud\Actions;
 
 class DeleteAction extends DefaultAction
 {
-    protected ?string $canDeleteJobClass = null;
+    protected mixed $validator = null;
 
     protected ?string $deletedModelEvent = null;
 
-    public function __construct(?string $canDeleteJobClass = null, ?string $deletedModelEvent = null)
+    public function __construct(?string $validatorJobClass = null, ?string $deletedModelEvent = null)
     {
-        $this->canDeleteJobClass = $canDeleteJobClass;
+        $this->setEvent($deletedModelEvent);
 
-        $this->deletedModelEvent = $deletedModelEvent;
+        $this->setValidator($validatorJobClass);
     }
 
-    /**
-     * @return string|null
-     */
-    public function getCanDeleteJobClass(): ?string
+    public function getValidator(): mixed
     {
-        return $this->canDeleteJobClass;
+        return $this->validator;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getDeletedModelEvent(): ?string
+    public function setValidator(string|callable|null $validator): self
+    {
+        if ($validator) {
+            $this->validator = $validator;
+        }
+
+        return $this;
+    }
+
+    public function getEventName(): ?string
     {
         return $this->deletedModelEvent;
+    }
+
+    public function setEvent(?string $eventName): self
+    {
+        if ($eventName) {
+            $this->deletedModelEvent = $eventName;
+        }
+
+        return $this;
     }
 }
