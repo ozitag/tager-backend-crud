@@ -4,17 +4,23 @@ namespace OZiTAG\Tager\Backend\Crud\Actions;
 
 class CountAction extends DefaultAction
 {
-    protected ?string $getCountBuilderJobClass = null;
+    protected mixed $queryBuilder = null;
 
     public function __construct(?string $getCountBuilderJobClass = null)
     {
         parent::__construct();
 
-        $this->getCountBuilderJobClass = $getCountBuilderJobClass;
+        $this->setQueryBuilder($getCountBuilderJobClass);
     }
 
-    public function getCountBuilderJobClass(): ?string
+    public function setQueryBuilder(mixed $queryBuilder): static
     {
-        return $this->getCountBuilderJobClass;
+        $this->queryBuilder = $queryBuilder;
+        return $this;
+    }
+
+    public function getQueryBuilder(): mixed
+    {
+        return $this->queryBuilder;
     }
 }

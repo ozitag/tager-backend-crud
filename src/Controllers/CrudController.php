@@ -237,7 +237,7 @@ class CrudController extends Controller
             $result['count'] = [
                 CountFeature::class,
                 $this->repository,
-                $this->countAction ? $this->countAction->getCountBuilderJobClass() : null
+                $this->countAction ? $this->countAction->getQueryBuilder() : null
             ];
         }
 
