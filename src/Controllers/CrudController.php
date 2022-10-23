@@ -313,6 +313,12 @@ class CrudController extends Controller
                     $action,
                     $this->isAdmin
                 ];
+            }else if ($action instanceof CountAction) {
+                $result[$actionName] = [
+                    CountFeature::class,
+                    $this->repository,
+                    $action->getQueryBuilder(),
+                ];
             } else if ($action instanceof StoreAction) {
 
                 if (!$action->getJobClass()) {
