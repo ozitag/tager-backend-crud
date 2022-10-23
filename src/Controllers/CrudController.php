@@ -10,7 +10,9 @@ use OZiTAG\Tager\Backend\Crud\Actions\DefaultAction;
 use OZiTAG\Tager\Backend\Crud\Actions\DeleteAction;
 use OZiTAG\Tager\Backend\Crud\Actions\IndexAction;
 use OZiTAG\Tager\Backend\Crud\Actions\MoveAction;
+use OZiTAG\Tager\Backend\Crud\Actions\StoreAction;
 use OZiTAG\Tager\Backend\Crud\Actions\StoreOrUpdateAction;
+use OZiTAG\Tager\Backend\Crud\Actions\UpdateAction;
 use OZiTAG\Tager\Backend\Crud\Features\CloneFeature;
 use OZiTAG\Tager\Backend\Crud\Features\CountFeature;
 use OZiTAG\Tager\Backend\Crud\Features\DeleteFeature;
@@ -309,6 +311,54 @@ class CrudController extends Controller
                     $action->resourceClass ?? $this->shortResourceClass,
                     $action->resourceFields ?? $this->shortResourceFields,
                     $action,
+                    $this->isAdmin
+                ];
+            } else if ($action instanceof StoreAction) {
+
+                if (!$action->getJobClass()) {
+                    if ($action->getJobParams()) {
+                        StoreJob::setConfig(array_merge($action->getJobParams(), [
+                            'hasPriority' => $this->hasMoveAction
+                        ]));
+                    }
+                    $jobClass = StoreJob::class;
+                } else {
+                    $jobClass = $action->getJobClass();
+                }
+
+                $result[$actionName] = [
+                    StoreFeature::class,
+                    $action->get('requestClass'),
+                    $jobClass,
+                    $this->fullResourceClass,
+                    $this->fullResourceFields,
+                    $this->cacheNamespace,
+                    $action->getEventClass()
+                ];
+            } else if ($action instanceof StoreAction) {
+                $result[$actionName] = [
+                    UpdateFeature::class,
+                    $this->getModelJobClass,
+                    $this->repository,
+                    $action->getRequestClass(),
+                    $jobClass,
+                    $this->fullResourceClass,
+                    $this->fullResourceFields,
+                    $this->cacheNamespace,
+                    $action->getEventClass(),
+                    $this->isAdmin
+                ];
+            } else if ($action instanceof UpdateAction) {
+                $result[$actionName] = [
+                    UpdateFeature::class,
+                    $this->getModelJobClass,
+                    $this->repository,
+                    $action->getRequestClass(),
+                    $jobClass,
+                    $this->fullResourceClass,
+                    $this->fullResourceFields,
+                    $this->cacheNamespace,
+                    $action->getEventClass(),
                     $this->isAdmin
                 ];
             }
