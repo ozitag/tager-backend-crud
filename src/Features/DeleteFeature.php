@@ -2,6 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
+use Illuminate\Database\Eloquent\Builder;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Resources\FailureResource;
 use OZiTAG\Tager\Backend\Core\Resources\SuccessResource;
@@ -15,9 +16,11 @@ class DeleteFeature extends ModelFeature
                                 protected mixed $validator,
                                 protected ?string $jobDeleteClass,
                                 protected ?string $cacheNamespace,
-                                protected ?string $eventName)
+                                protected ?string $eventName,
+                                Builder $builder
+    )
     {
-        parent::__construct($id, $jobGetByIdClass, $repository);
+        parent::__construct($id, $jobGetByIdClass, $repository,$builder);
 
     }
 

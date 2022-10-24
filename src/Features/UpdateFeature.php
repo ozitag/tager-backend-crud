@@ -2,6 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\App;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
@@ -26,9 +27,12 @@ class UpdateFeature extends ModelFeature
 
     private bool $isAdmin;
 
-    public function __construct($id, $getByidJobClass, EloquentRepository $repository, $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $eventClass, $isAdmin)
+    public function __construct($id, $getByidJobClass, EloquentRepository $repository,
+        $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $eventClass, $isAdmin,
+                                Builder $builder
+    )
     {
-        parent::__construct($id, $getByidJobClass, $repository);
+        parent::__construct($id, $getByidJobClass, $repository, $builder);
 
         $this->requestClass = $requestClass;
         $this->jobClass = $jobClass;

@@ -2,6 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
+use Illuminate\Database\Eloquent\Builder;
 use OZiTAG\Tager\Backend\Core\Controllers\Controller;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Crud\Actions\CloneAction;
@@ -60,6 +61,7 @@ class CrudController extends Controller
 
     private string|array|null $cacheNamespace = null;
 
+    private ?Builder $defaultQueryBuilder = null;
 
     // ***** Actions ****** //
 
@@ -91,6 +93,11 @@ class CrudController extends Controller
     public function setCacheNamespace(string|array $namespace)
     {
         $this->cacheNamespace = $namespace;
+    }
+
+    public function setQueryBuilder(Builder $builder)
+    {
+        $this->defaultQueryBuilder = $builder;
     }
 
     // ***** Actions ****** //
@@ -192,12 +199,21 @@ class CrudController extends Controller
         $result = [];
 
         if ($this->hasIndexAction) {
+
+            $action = $this->indexAction;
+            if (!$this->indexAction) {
+                $action = new IndexAction();
+                if ($this->defaultQueryBuilder) {
+                    $action->setQueryBuilder($this->defaultQueryBuilder);
+                }
+            }
+
             $result['index'] = [
                 ListFeature::class,
                 $this->repository,
                 $this->shortResourceClass,
                 $this->shortResourceFields,
-                $this->indexAction ?? new IndexAction(),
+                $action,
                 $this->isAdmin
             ];
         }
@@ -209,7 +225,8 @@ class CrudController extends Controller
                 $this->repository,
                 $this->fullResourceClass,
                 $this->fullResourceFields,
-                $this->isAdmin
+                $this->isAdmin,
+                $this->defaultQueryBuilder
             ];
         }
 
@@ -221,7 +238,8 @@ class CrudController extends Controller
                 $this->deleteAction ? $this->deleteAction->getValidator() : null,
                 $this->deleteModelJobClass,
                 $this->cacheNamespace,
-                $this->deleteAction ? $this->deleteAction->getEventName() : null
+                $this->deleteAction ? $this->deleteAction->getEventName() : null,
+                $this->defaultQueryBuilder,
             ];
         }
 
@@ -232,6 +250,7 @@ class CrudController extends Controller
                 $this->repository,
                 $this->cacheNamespace,
                 $this->moveAction ? $this->moveAction->getEventClass() : null,
+                $this->defaultQueryBuilder,
             ];
         }
 
@@ -239,7 +258,7 @@ class CrudController extends Controller
             $result['count'] = [
                 CountFeature::class,
                 $this->repository,
-                $this->countAction ? $this->countAction->getQueryBuilder() : null
+                $this->countAction ? $this->countAction->getQueryBuilder() : $this->defaultQueryBuilder,
             ];
         }
 
@@ -252,7 +271,8 @@ class CrudController extends Controller
                 $this->fullResourceClass,
                 $this->fullResourceFields,
                 $this->cacheNamespace,
-                $this->isAdmin
+                $this->isAdmin,
+                $this->defaultQueryBuilder,
             ];
         }
 
@@ -299,12 +319,18 @@ class CrudController extends Controller
                 $this->fullResourceFields,
                 $this->cacheNamespace,
                 $this->updateAction->getEventClass(),
-                $this->isAdmin
+                $this->isAdmin,
+                $this->defaultQueryBuilder
             ];
         }
 
         foreach ($this->customActions as $actionName => $action) {
             if ($action instanceof IndexAction) {
+
+                if (!$action->getQueryBuilder() && $this->defaultQueryBuilder) {
+                    $action->setQueryBuilder($this->defaultQueryBuilder);
+                }
+
                 $result[$actionName] = [
                     ListFeature::class,
                     $this->repository,
@@ -313,11 +339,11 @@ class CrudController extends Controller
                     $action,
                     $this->isAdmin
                 ];
-            }else if ($action instanceof CountAction) {
+            } else if ($action instanceof CountAction) {
                 $result[$actionName] = [
                     CountFeature::class,
                     $this->repository,
-                    $action->getQueryBuilder(),
+                    $action->getQueryBuilder() ? $action->getQueryBuilder() : $this->defaultQueryBuilder,
                 ];
             } else if ($action instanceof StoreAction) {
 
@@ -352,7 +378,8 @@ class CrudController extends Controller
                     $this->fullResourceFields,
                     $this->cacheNamespace,
                     $action->getEventClass(),
-                    $this->isAdmin
+                    $this->isAdmin,
+                    $this->defaultQueryBuilder,
                 ];
             } else if ($action instanceof UpdateAction) {
                 $result[$actionName] = [
@@ -365,7 +392,8 @@ class CrudController extends Controller
                     $this->fullResourceFields,
                     $this->cacheNamespace,
                     $action->getEventClass(),
-                    $this->isAdmin
+                    $this->isAdmin,
+                    $this->defaultQueryBuilder
                 ];
             }
         }

@@ -2,6 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
+use Illuminate\Database\Eloquent\Builder;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceFieldsJob;
@@ -17,9 +18,11 @@ class CloneFeature extends ModelFeature
     protected ?string $cacheNamespace;
     protected bool $isAdmin;
 
-    public function __construct(int $id, ?string $jobGetByIdClass, EloquentRepository $repository, $cloneModelJobClass, $resourceClass, $resourceFields, $cacheNamespace, $isAdmin)
+    public function __construct(int     $id, ?string $jobGetByIdClass,
+                                EloquentRepository $repository, $cloneModelJobClass, $resourceClass, $resourceFields, $cacheNamespace, $isAdmin,
+                                Builder $builder)
     {
-        parent::__construct($id, $jobGetByIdClass, $repository);
+        parent::__construct($id, $jobGetByIdClass, $repository, $builder);
 
         $this->repository = $repository;
 

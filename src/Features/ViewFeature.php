@@ -2,6 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
+use Illuminate\Database\Eloquent\Builder;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Crud\Jobs\GetModelResourceFieldsJob;
 use OZiTAG\Tager\Backend\Crud\Resources\ModelResource;
@@ -14,9 +15,9 @@ class ViewFeature extends ModelFeature
 
     private $isAdmin;
 
-    public function __construct($id, $jobGetByIdClass, $repository, $resourceClass, $resourceFields, $isAdmin)
+    public function __construct($id, $jobGetByIdClass, $repository, $resourceClass, $resourceFields, $isAdmin, Builder $builder)
     {
-        parent::__construct($id, $jobGetByIdClass, $repository);
+        parent::__construct($id, $jobGetByIdClass, $repository, $builder);
         $this->resourceClass = $resourceClass;
         $this->resourceFields = $resourceFields;
         $this->isAdmin = $isAdmin;
