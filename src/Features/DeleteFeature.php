@@ -17,7 +17,7 @@ class DeleteFeature extends ModelFeature
                                 protected ?string $jobDeleteClass,
                                 protected ?string $cacheNamespace,
                                 protected ?string $eventName,
-                                Builder $builder
+                                ?Builder $builder = null
     )
     {
         parent::__construct($id, $jobGetByIdClass, $repository,$builder);

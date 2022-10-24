@@ -20,7 +20,7 @@ class CloneFeature extends ModelFeature
 
     public function __construct(int     $id, ?string $jobGetByIdClass,
                                 EloquentRepository $repository, $cloneModelJobClass, $resourceClass, $resourceFields, $cacheNamespace, $isAdmin,
-                                Builder $builder)
+                                ?Builder $builder)
     {
         parent::__construct($id, $jobGetByIdClass, $repository, $builder);
 

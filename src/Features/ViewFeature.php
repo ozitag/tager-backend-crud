@@ -15,7 +15,7 @@ class ViewFeature extends ModelFeature
 
     private $isAdmin;
 
-    public function __construct($id, $jobGetByIdClass, $repository, $resourceClass, $resourceFields, $isAdmin, Builder $builder)
+    public function __construct($id, $jobGetByIdClass, $repository, $resourceClass, $resourceFields, $isAdmin, ?Builder $builder = null)
     {
         parent::__construct($id, $jobGetByIdClass, $repository, $builder);
         $this->resourceClass = $resourceClass;

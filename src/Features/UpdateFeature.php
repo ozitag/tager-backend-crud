@@ -29,7 +29,7 @@ class UpdateFeature extends ModelFeature
 
     public function __construct($id, $getByidJobClass, EloquentRepository $repository,
         $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $eventClass, $isAdmin,
-                                Builder $builder
+                                ?Builder $builder = null
     )
     {
         parent::__construct($id, $getByidJobClass, $repository, $builder);
