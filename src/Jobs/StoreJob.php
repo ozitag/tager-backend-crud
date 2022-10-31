@@ -86,7 +86,7 @@ class StoreJob extends BaseCreateUpdateJob
 
         if (isset(self::$config['afterSaveJob'])) {
             $model = $this->run(self::$config['afterSaveJob'], [
-                'model' => model,
+                'model' => $model,
                 'request' => $this->request
             ]);
         }
