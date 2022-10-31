@@ -84,6 +84,13 @@ class StoreJob extends BaseCreateUpdateJob
 
         $model = $this->repository()->fillAndSave($data);
 
+        if (isset(self::$config['afterSaveJob'])) {
+            $model = $this->run(self::$config['afterSaveJob'], [
+                'model' => $this->model,
+                'request' => $this->request
+            ]);
+        }
+
         $updatedEventClass = $this->getUpdatedEventClass();
         if ($updatedEventClass) {
             $event = new $updatedEventClass($model, null, $model->getAttributes());
