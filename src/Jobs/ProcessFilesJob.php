@@ -63,6 +63,7 @@ class ProcessFilesJob extends Job
             $innerField = null;
             if ($pointPos !== false) {
                 $innerField = substr($field, $pointPos + 1);
+
                 $field = substr($field, 0, $pointPos);
             }
 
@@ -72,8 +73,10 @@ class ProcessFilesJob extends Job
                 if (is_array($value)) {
                     foreach ($value as $ind => $item) {
                         try {
-                            if ($innerField && is_array($item) && isset($item[$innerField])) {
-                                $storage->setFileScenario($item[$innerField], $scenario);
+                            if ($innerField && is_array($item) && array_key_exists($innerField, $item)) {
+                                if ($item[$innerField]) {
+                                    $storage->setFileScenario($item[$innerField], $scenario);
+                                }
                             } else {
                                 $storage->setFileScenario($item, $scenario);
                             }
