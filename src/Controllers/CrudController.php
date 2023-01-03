@@ -3,7 +3,10 @@
 namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Request;
 use OZiTAG\Tager\Backend\Core\Controllers\Controller;
+use OZiTAG\Tager\Backend\Core\Http\FormRequest;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Crud\Actions\CloneAction;
 use OZiTAG\Tager\Backend\Crud\Actions\CountAction;
@@ -346,7 +349,6 @@ class CrudController extends Controller
                     $action->getQueryBuilder() ? $action->getQueryBuilder() : $this->defaultQueryBuilder,
                 ];
             } else if ($action instanceof StoreAction) {
-
                 if (!$action->getJobClass()) {
                     if ($action->getJobParams()) {
                         StoreJob::setConfig(array_merge($action->getJobParams(), [
@@ -367,23 +369,11 @@ class CrudController extends Controller
                     $this->cacheNamespace,
                     $action->getEventClass()
                 ];
-            } else if ($action instanceof StoreAction) {
-                $result[$actionName] = [
-                    UpdateFeature::class,
-                    $this->getModelJobClass,
-                    $this->repository,
-                    $action->getRequestClass(),
-                    $jobClass,
-                    $this->fullResourceClass,
-                    $this->fullResourceFields,
-                    $this->cacheNamespace,
-                    $action->getEventClass(),
-                    $this->isAdmin,
-                    $this->defaultQueryBuilder,
-                ];
             } else if ($action instanceof UpdateAction) {
+     
                 $result[$actionName] = [
                     UpdateFeature::class,
+                    request()->route('id'),
                     $this->getModelJobClass,
                     $this->repository,
                     $action->getRequestClass(),
