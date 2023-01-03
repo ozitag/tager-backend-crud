@@ -370,7 +370,18 @@ class CrudController extends Controller
                     $action->getEventClass()
                 ];
             } else if ($action instanceof UpdateAction) {
-     
+
+                if (!$action->getJobClass()) {
+                    if ($action->getJobParams()) {
+                        StoreJob::setConfig(array_merge($action->getJobParams(), [
+                            'hasPriority' => $this->hasMoveAction
+                        ]));
+                    }
+                    $jobClass = StoreJob::class;
+                } else {
+                    $jobClass = $action->getJobClass();
+                }
+
                 $result[$actionName] = [
                     UpdateFeature::class,
                     request()->route('id'),
