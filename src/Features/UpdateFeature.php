@@ -2,7 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Support\Facades\App;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
@@ -29,7 +29,7 @@ class UpdateFeature extends ModelFeature
 
     public function __construct($id, $getByidJobClass, EloquentRepository $repository,
         $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $eventClass, $isAdmin,
-                                ?Builder $builder = null
+                                ?BuilderContract $builder = null
     )
     {
         parent::__construct($id, $getByidJobClass, $repository, $builder);

@@ -2,11 +2,8 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Controllers;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use OZiTAG\Tager\Backend\Core\Controllers\Controller;
-use OZiTAG\Tager\Backend\Core\Http\FormRequest;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Crud\Actions\CloneAction;
 use OZiTAG\Tager\Backend\Crud\Actions\CountAction;
@@ -64,7 +61,7 @@ class CrudController extends Controller
 
     private string|array|null $cacheNamespace = null;
 
-    private ?Builder $defaultQueryBuilder = null;
+    private ?BuilderContract $defaultQueryBuilder = null;
 
     // ***** Actions ****** //
 
@@ -98,7 +95,7 @@ class CrudController extends Controller
         $this->cacheNamespace = $namespace;
     }
 
-    public function setQueryBuilder(Builder $builder)
+    public function setQueryBuilder(BuilderContract $builder)
     {
         $this->defaultQueryBuilder = $builder;
     }

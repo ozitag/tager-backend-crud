@@ -2,7 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Http\Resources\Json\JsonResource;
 use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
@@ -21,13 +21,13 @@ class CountFeature extends Feature
         $this->queryBuilder = $queryBuilder;
     }
 
-    private function getQueryBuilder(Request $request): ?Builder
+    private function getQueryBuilder(Request $request): ?BuilderContract
     {
         if (is_string($this->queryBuilder)) {
             return dispatch_sync(new $this->queryBuilder());
         } else if (is_callable($this->queryBuilder)) {
             return call_user_func($this->queryBuilder, $request);
-        } else if ($this->queryBuilder instanceof Builder) {
+        } else if ($this->queryBuilder instanceof BuilderContract) {
             return $this->queryBuilder;
         } else {
             return null;
@@ -40,7 +40,7 @@ class CountFeature extends Feature
             $builder = dispatch_sync(new $this->queryBuilder());
         } else if (is_callable($this->queryBuilder)) {
             $builder = call_user_func($this->queryBuilder, $request);
-        } else if ($this->queryBuilder instanceof Builder) {
+        } else if ($this->queryBuilder instanceof BuilderContract) {
             $builder = $this->queryBuilder;
         } else {
             $builder = $this->repository->builder();

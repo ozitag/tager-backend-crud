@@ -2,9 +2,8 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
-use OZiTAG\Tager\Backend\Core\Resources\FailureResource;
 use OZiTAG\Tager\Backend\Core\Resources\SuccessResource;
 use OZiTAG\Tager\Backend\HttpCache\HttpCache;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -17,7 +16,7 @@ class DeleteFeature extends ModelFeature
                                 protected ?string $jobDeleteClass,
                                 protected ?string $cacheNamespace,
                                 protected ?string $eventName,
-                                ?Builder $builder = null
+                                ?BuilderContract $builder = null
     )
     {
         parent::__construct($id, $jobGetByIdClass, $repository,$builder);

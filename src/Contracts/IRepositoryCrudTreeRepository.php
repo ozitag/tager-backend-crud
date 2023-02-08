@@ -2,9 +2,9 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Contracts;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 
 interface IRepositoryCrudTreeRepository
 {
-    public function toFlatTree(Builder $builder, bool $paginate = false, ?string $query = null, ?array $filter = []);
+    public function toFlatTree(BuilderContract $builder, bool $paginate = false, ?string $query = null, ?array $filter = []);
 }

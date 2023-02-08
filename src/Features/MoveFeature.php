@@ -2,7 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use OZiTAG\Tager\Backend\Core\Features\ModelFeature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 use OZiTAG\Tager\Backend\Core\Resources\SuccessResource;
@@ -20,7 +20,7 @@ class MoveFeature extends ModelFeature
 
     private $eventClass;
 
-    public function __construct($id, $direction, $jobGetByIdClass, ?EloquentRepository $repository, $cacheNamespace, ?string $eventClass, ?Builder $builder)
+    public function __construct($id, $direction, $jobGetByIdClass, ?EloquentRepository $repository, $cacheNamespace, ?string $eventClass, ?BuilderContract $builder)
     {
         parent::__construct($id, $jobGetByIdClass, $repository, $builder);
 

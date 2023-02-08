@@ -2,8 +2,7 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Actions;
 
-use Doctrine\DBAL\Query\QueryBuilder;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 
 class IndexAction extends DefaultAction
 {
@@ -97,13 +96,13 @@ class IndexAction extends DefaultAction
         return $this;
     }
 
-    public function getQueryBuilder(): ?Builder
+    public function getQueryBuilder(): ?BuilderContract
     {
         if (is_string($this->queryBuilder)) {
             return dispatch_sync(new $this->queryBuilder());
         } else if (is_callable($this->queryBuilder)) {
             return call_user_func($this->queryBuilder);
-        } else if ($this->queryBuilder instanceof Builder) {
+        } else if ($this->queryBuilder instanceof BuilderContract) {
             return $this->queryBuilder;
         } else {
             return null;
