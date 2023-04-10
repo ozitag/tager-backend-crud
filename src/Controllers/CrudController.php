@@ -59,6 +59,8 @@ class CrudController extends Controller
 
     private ?array $fullResourceFields = null;
 
+    private ?array $resourceFieldsByView = [];
+
     private string|array|null $cacheNamespace = null;
 
     private ?BuilderContract $defaultQueryBuilder = null;
@@ -158,6 +160,11 @@ class CrudController extends Controller
         }
     }
 
+    protected function setResourceFieldsForView(string $view, array $fields)
+    {
+        $this->resourceFieldsByView[$view] = $fields;
+    }
+
     protected function setShortResourceClass(string $class)
     {
         $this->shortResourceClass = $class;
@@ -214,7 +221,8 @@ class CrudController extends Controller
                 $this->shortResourceClass,
                 $this->shortResourceFields,
                 $action,
-                $this->isAdmin
+                $this->isAdmin,
+                $this->resourceFieldsByView,
             ];
         }
 

@@ -33,7 +33,8 @@ class ListFeature extends Feature
                            $resourceClassName,
                            $resourceFields,
         IndexAction        $action,
-        bool               $isAdmin
+        bool               $isAdmin,
+        protected ?array   $resourceFieldsByView = []
     )
     {
         $this->repository = $repository;
@@ -48,6 +49,8 @@ class ListFeature extends Feature
 
     public function handle(Request $request)
     {
+        $view = $request->get('view');
+
         if ($this->hasPagination) {
             $this->registerPaginationRequest();
         }
@@ -104,7 +107,15 @@ class ListFeature extends Feature
                 : $this->repository->get($baseBuilder, $this->hasPagination, $query, $filter, $sort);
         }
 
-        if (!$this->resourceClassName) {
+
+        if($view && array_key_exists($view, $this->resourceFieldsByView)){
+            $resourceFields = $this->run(GetModelResourceFieldsJob::class, [
+                'resourceFields' => $this->resourceFieldsByView[$view],
+                'isAdmin' => $this->isAdmin,
+            ]);
+
+            ModelResource::setFields($resourceFields);
+        } else if (!$this->resourceClassName) {
             $resourceFields = $this->run(GetModelResourceFieldsJob::class, [
                 'resourceFields' => $this->resourceFields,
                 'isAdmin' => $this->isAdmin,
