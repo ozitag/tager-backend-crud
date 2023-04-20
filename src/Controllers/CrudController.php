@@ -244,7 +244,7 @@ class CrudController extends Controller
                 $this->getModelJobClass,
                 $this->repository,
                 $this->deleteAction ? $this->deleteAction->getValidator() : null,
-                $this->deleteModelJobClass,
+                $this->deleteAction ? $this->deleteAction->getJobClass() : null,
                 $this->cacheNamespace,
                 $this->deleteAction ? $this->deleteAction->getEventName() : null,
                 $this->defaultQueryBuilder,

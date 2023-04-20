@@ -7,7 +7,9 @@ class DeleteAction extends DefaultAction
     protected mixed $validator = null;
 
     protected ?string $deletedModelEvent = null;
-
+    
+    protected ?string $jobClass = null;
+    
     public function __construct(?string $validatorJobClass = null, ?string $deletedModelEvent = null)
     {
         $this->setEvent($deletedModelEvent);
@@ -38,6 +40,21 @@ class DeleteAction extends DefaultAction
     {
         if ($eventName) {
             $this->deletedModelEvent = $eventName;
+        }
+
+        return $this;
+    }
+
+
+    public function getJobClass(): ?string
+    {
+        return $this->jobClass;
+    }
+
+    public function setJobClass(?string $jobClass): self
+    {
+        if ($jobClass) {
+            $this->jobClass = $jobClass;
         }
 
         return $this;
