@@ -71,7 +71,9 @@ class ListFeature extends Feature
         $sort = $request->get('sort');
 
         $builder = $this->action->getQueryBuilder();
+
         if ($builder) {
+            $builder->select($this->repository->getTableName().'.*');
             if ($query !== null && $this->hasQuery && $this->repository instanceof ISearchable) {
                 $builder = $this->repository->searchByQuery($query, $builder);
             }
@@ -98,6 +100,8 @@ class ListFeature extends Feature
         } else {
             $baseBuilder = $this->isAdmin ? $this->repository->adminBuilder() : $this->repository->builder();
 
+            $baseBuilder->select
+            $baseBuilder->select($this->repository->getTableName().'.*');
             if (!empty($this->action->getWith())) {
                 $baseBuilder->with($this->action->getWith());
             }
