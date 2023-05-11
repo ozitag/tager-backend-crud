@@ -100,7 +100,6 @@ class ListFeature extends Feature
         } else {
             $baseBuilder = $this->isAdmin ? $this->repository->adminBuilder() : $this->repository->builder();
 
-            $baseBuilder->select
             $baseBuilder->select($this->repository->getTableName().'.*');
             if (!empty($this->action->getWith())) {
                 $baseBuilder->with($this->action->getWith());
