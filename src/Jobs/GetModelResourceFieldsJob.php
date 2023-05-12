@@ -29,10 +29,10 @@ class GetModelResourceFieldsJob extends Job
 
             $fieldParts = explode(':', $resourceField);
             if (count($fieldParts) == 3 && $fieldParts[1] == 'file' && $fieldParts[2] == 'url') {
-                return $resourceField . ':tager-admin-list';
+                return $resourceField . ':tager-admin-list,tager-admin-view';
             }
             if (count($fieldParts) == 3 && $fieldParts[1] == 'file' && $fieldParts[2] == 'model') {
-                return $resourceField . ':tager-admin-view';
+                return $resourceField . ':tager-admin-view,tager-admin-list';
             }
 
             return $resourceField;
