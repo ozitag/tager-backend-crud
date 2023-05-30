@@ -59,14 +59,12 @@ class ProcessFilesJob extends Job
                 $scenario = $scenario->value;
             }
 
-            $pointPos = strpos($field, '.');
+            $pointPos = strrpos($field, '.');
             $innerField = null;
             if ($pointPos !== false) {
                 $innerField = substr($field, $pointPos + 1);
-
                 $field = substr($field, 0, $pointPos);
             }
-
             $value = $this->getValue($field);
 
             if ($value) {
@@ -76,6 +74,10 @@ class ProcessFilesJob extends Job
                             if ($innerField && is_array($item) && array_key_exists($innerField, $item)) {
                                 if ($item[$innerField]) {
                                     $storage->setFileScenario($item[$innerField], $scenario);
+                                }
+                            } elseif ($innerField == '*' && is_array($item)) {
+                                foreach ($item as $itemElement) {
+                                    $storage->setFileScenario($itemElement, $scenario);
                                 }
                             } else {
                                 $storage->setFileScenario($item, $scenario);
