@@ -98,16 +98,16 @@ class ListFeature extends Feature
                 $items = $this->repository->paginate($builder);
             }
         } else {
-            $baseBuilder = $this->isAdmin ? $this->repository->adminBuilder() : $this->repository->builder();
+            $builder = $this->isAdmin ? $this->repository->adminBuilder() : $this->repository->builder();
 
-            $baseBuilder->select($this->repository->getTableName().'.*');
+            $builder->select($this->repository->getTableName().'.*');
             if (!empty($this->action->getWith())) {
-                $baseBuilder->with($this->action->getWith());
+                $builder->with($this->action->getWith());
             }
 
             $items = $this->action->get('isTree')
-                ? $this->repository->toFlatTree($baseBuilder, $this->hasPagination, $query, $filter, $sort)
-                : $this->repository->get($baseBuilder, $this->hasPagination, $query, $filter, $sort);
+                ? $this->repository->toFlatTree($builder, $this->hasPagination, $query, $filter, $sort)
+                : $this->repository->get($builder, $this->hasPagination, $query, $filter, $sort);
         }
 
 
@@ -132,6 +132,14 @@ class ListFeature extends Feature
             return (new $class($item));
         });
 
-        return new ResourceCollection($items);
+        $meta = [];
+        $metaDataJob = $this->action->getMetaDataJob();
+        if($metaDataJob){
+            $meta = $this->run($metaDataJob, [
+                'builder' => $builder
+            ]);
+        }
+
+        return new ResourceCollection($items, $meta);
     }
 }

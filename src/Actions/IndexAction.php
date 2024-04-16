@@ -18,6 +18,8 @@ class IndexAction extends DefaultAction
 
     protected array $with = [];
 
+    protected ?string $metaDataJobClass = null;
+
     public ?string $resourceClass = null;
 
     public ?array $resourceFields = null;
@@ -107,5 +109,16 @@ class IndexAction extends DefaultAction
         } else {
             return null;
         }
+    }
+
+    public function setMetaDataJob(string $jobClass)
+    {
+        $this->metaDataJobClass = $jobClass;
+        return $this;
+    }
+
+    public function getMetaDataJob(): ?string
+    {
+        return $this->metaDataJobClass;
     }
 }
