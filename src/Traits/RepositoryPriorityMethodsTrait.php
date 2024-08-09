@@ -4,6 +4,19 @@ namespace OZiTAG\Tager\Backend\Crud\Traits;
 
 trait RepositoryPriorityMethodsTrait
 {
+    public function findItemWithMinPriority($conditionalAttributes = [])
+    {
+        $query = $this->model->orderBy('priority', 'asc');
+
+        if ($conditionalAttributes) {
+            foreach ($conditionalAttributes as $field => $value) {
+                $query->where($field, '=', $value);
+            }
+        }
+
+        return $query->first();
+    }
+
     public function findItemWithMaxPriority($conditionalAttributes = [])
     {
         $query = $this->model->orderBy('priority', 'desc');

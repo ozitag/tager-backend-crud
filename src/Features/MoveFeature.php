@@ -60,19 +60,29 @@ class MoveFeature extends ModelFeature
                 ];
             }
 
-            if ($this->direction == 'up') {
-                $other = $this->repository->findFirstWithLowerPriorityThan($model->priority, $conditionalAttributesWithFields);
+            if ($this->direction == 'up-top') {
+                $other = $this->repository->findItemWithMinPriority($conditionalAttributesWithFields);
+
+                if ($other) {
+                    $model->priority = $other->priority - 1;
+                    $model->save();
+                }
+
             } else {
-                $other = $this->repository->findFirstWithHigherPriorityThan($model->priority, $conditionalAttributesWithFields);
-            }
+                if ($this->direction == 'up') {
+                    $other = $this->repository->findFirstWithLowerPriorityThan($model->priority, $conditionalAttributesWithFields);
+                } else {
+                    $other = $this->repository->findFirstWithHigherPriorityThan($model->priority, $conditionalAttributesWithFields);
+                }
 
-            if ($other) {
-                $a = $other->priority;
-                $other->priority = $model->priority;
-                $model->priority = $a;
+                if ($other) {
+                    $a = $other->priority;
+                    $other->priority = $model->priority;
+                    $model->priority = $a;
 
-                $model->save();
-                $other->save();
+                    $model->save();
+                    $other->save();
+                }
             }
         }
 
