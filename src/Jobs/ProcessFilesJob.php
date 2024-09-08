@@ -70,6 +70,7 @@ class ProcessFilesJob extends Job
             if ($value) {
                 if (is_array($value)) {
                     foreach ($value as $ind => $item) {
+                        if (!$item) continue;
                         try {
                             if ($innerField && is_array($item) && array_key_exists($innerField, $item)) {
                                 if ($item[$innerField]) {
