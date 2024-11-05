@@ -3,6 +3,7 @@
 namespace OZiTAG\Tager\Backend\Crud\Jobs;
 
 use Ozerich\FileStorage\Storage;
+use OZiTAG\Tager\Backend\Crud\Contracts\IModelPriorityConditional;
 use OZiTAG\Tager\Backend\Utils\Helpers\Translit;
 
 class StoreJob extends BaseCreateUpdateJob
@@ -78,7 +79,24 @@ class StoreJob extends BaseCreateUpdateJob
         }
 
         if ($this->hasPriority()) {
-            $maxPriorityItem = $this->repository()->findItemWithMaxPriority();
+
+            $conditionalAttributesWithFields = [];
+
+            $model = $this->repository()->createModelInstance();
+            if ($model instanceof IModelPriorityConditional) {
+                $conditionalAttributes = $model->getPriorityConditionalAttributes();
+                foreach ($model->getPriorityConditionalAttributes() as $field) {
+                    if(array_key_exists($field, $data)){
+                        $conditionalAttributesWithFields[] = [
+                            'field' => $field,
+                            'operator' => '=',
+                            'operand' => $data[$field]
+                        ];
+                    }
+                }
+            }
+
+            $maxPriorityItem = $this->repository()->findItemWithMaxPriority($conditionalAttributesWithFields);
             $data['priority'] = $maxPriorityItem ? $maxPriorityItem->priority + 1 : 1;
         }
 

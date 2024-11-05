@@ -4,55 +4,40 @@ namespace OZiTAG\Tager\Backend\Crud\Traits;
 
 trait RepositoryPriorityMethodsTrait
 {
+    private function addConditionalAttributesToQuery(&$query, ?array $conditionalAttributes = null)
+    {
+        if ($conditionalAttributes && is_array($conditionalAttributes))  {
+            foreach ($conditionalAttributes as $conditionalAttribute) {
+                $query->where($conditionalAttribute['field'], $conditionalAttribute['operator'], $conditionalAttribute['operand']);
+            }
+        }
+    }
+
     public function findItemWithMinPriority($conditionalAttributes = [])
     {
         $query = $this->model->orderBy('priority', 'asc');
-
-        if ($conditionalAttributes) {
-            foreach ($conditionalAttributes as $field => $value) {
-                $query->where($field, '=', $value);
-            }
-        }
-
+        $this->addConditionalAttributesToQuery($query, $conditionalAttributes);
         return $query->first();
     }
 
     public function findItemWithMaxPriority($conditionalAttributes = [])
     {
         $query = $this->model->orderBy('priority', 'desc');
-
-        if ($conditionalAttributes) {
-            foreach ($conditionalAttributes as $field => $value) {
-                $query->where($field, '=', $value);
-            }
-        }
-
+        $this->addConditionalAttributesToQuery($query, $conditionalAttributes);
         return $query->first();
     }
 
     public function findFirstWithLowerPriorityThan($priority, $conditionalAttributes = [])
     {
         $query = $this->model::query()->where('priority', '<', $priority)->orderBy('priority', 'desc');
-
-        if ($conditionalAttributes) {
-            foreach ($conditionalAttributes as $conditionalAttribute) {
-                $query->where($conditionalAttribute['field'], $conditionalAttribute['operator'], $conditionalAttribute['operand']);
-            }
-        }
-
+        $this->addConditionalAttributesToQuery($query, $conditionalAttributes);
         return $query->first();
     }
 
     public function findFirstWithHigherPriorityThan($priority, $conditionalAttributes = [])
     {
         $query = $this->model::query()->where('priority', '>', $priority)->orderBy('priority', 'asc');
-
-        if ($conditionalAttributes) {
-            foreach ($conditionalAttributes as $conditionalAttribute) {
-                $query->where($conditionalAttribute['field'], $conditionalAttribute['operator'], $conditionalAttribute['operand']);
-            }
-        }
-
+        $this->addConditionalAttributesToQuery($query, $conditionalAttributes);
         return $query->first();
     }
 }
