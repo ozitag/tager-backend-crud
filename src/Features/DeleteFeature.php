@@ -13,9 +13,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class DeleteFeature extends ModelFeature
 {
     public function __construct(int                $id,
+                                protected ?string  $jobGetByIdClass = null,
                                 EloquentRepository $repository,
                                 protected mixed    $validator = null,
-                                protected ?string  $jobGetByIdClass = null,
                                 protected ?string  $jobDeleteClass = null,
                                 protected ?string  $cacheNamespace = null,
                                 protected ?string  $eventName = null,
