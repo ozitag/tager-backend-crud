@@ -6,9 +6,13 @@ trait RepositoryPriorityMethodsTrait
 {
     private function addConditionalAttributesToQuery(&$query, ?array $conditionalAttributes = null)
     {
-        if ($conditionalAttributes && is_array($conditionalAttributes))  {
-            foreach ($conditionalAttributes as $conditionalAttribute) {
-                $query->where($conditionalAttribute['field'], $conditionalAttribute['operator'], $conditionalAttribute['operand']);
+        if ($conditionalAttributes && is_array($conditionalAttributes)) {
+            foreach ($conditionalAttributes as $param => $conditionalAttribute) {
+                if (!array_is_list($conditionalAttributes)) {
+                    $query->where($param, $conditionalAttribute);
+                } else {
+                    $query->where($conditionalAttribute['field'], $conditionalAttribute['operator'], $conditionalAttribute['operand']);
+                }
             }
         }
     }
