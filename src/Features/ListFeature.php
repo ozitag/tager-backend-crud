@@ -2,7 +2,9 @@
 
 namespace OZiTAG\Tager\Backend\Crud\Features;
 
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use OZiTAG\Tager\Backend\Core\Features\Feature;
 use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
@@ -47,6 +49,28 @@ class ListFeature extends Feature
         $this->hasSort = $this->action->get('hasSort');
     }
 
+    /**
+     * Выбрать колонки собственной таблицы — но только если вызывающий код
+     * не выбрал их сам.
+     *
+     * Безусловный select('<таблица>.*') затирал любой select, выставленный
+     * на билдере до прихода сюда: по приджойненной колонке можно было
+     * фильтровать и сортировать, но нельзя было её показать. Join при этом
+     * оставался, так что поломка выглядела как «колонка молча пропала».
+     *
+     * Умолчание прежнее: когда колонки не заданы, выбирается '<таблица>.*',
+     * иначе join'ы из searchByQuery()/filter() растащили бы в выборку чужие
+     * одноимённые колонки.
+     */
+    private function selectOwnColumns(Builder|EloquentBuilder $builder): void
+    {
+        $query = $builder instanceof EloquentBuilder ? $builder->getQuery() : $builder;
+
+        if (empty($query->columns)) {
+            $builder->select($this->repository->getTableName() . '.*');
+        }
+    }
+
     public function handle(Request $request)
     {
         $view = $request->get('view');
@@ -73,7 +97,7 @@ class ListFeature extends Feature
         $builder = $this->action->getQueryBuilder();
 
         if ($builder) {
-            $builder->select($this->repository->getTableName().'.*');
+            $this->selectOwnColumns($builder);
             if ($query !== null && $this->hasQuery && $this->repository instanceof ISearchable) {
                 $builder = $this->repository->searchByQuery($query, $builder);
             }
@@ -100,7 +124,7 @@ class ListFeature extends Feature
         } else {
             $builder = $this->isAdmin ? $this->repository->adminBuilder() : $this->repository->builder();
 
-            $builder->select($this->repository->getTableName().'.*');
+            $this->selectOwnColumns($builder);
             if (!empty($this->action->getWith())) {
                 $builder->with($this->action->getWith());
             }
