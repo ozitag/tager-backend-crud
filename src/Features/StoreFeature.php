@@ -24,8 +24,12 @@ class StoreFeature extends Feature
 
     private $eventClass;
 
-    public function __construct($requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $eventClass)
+    private ?array $jobConfig;
+
+    public function __construct($requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $eventClass, ?array $jobConfig = null)
     {
+        $this->jobConfig = $jobConfig;
+
         $this->requestClass = $requestClass;
         $this->jobClass = $jobClass;
         $this->resourceClass = $resourceClass;
@@ -42,7 +46,10 @@ class StoreFeature extends Feature
             $this->run(ProcessFilesJob::class, ['request' => $request]);
         }
 
-        $model = $this->run($this->jobClass, ['request' => $request]);
+        $model = $this->run($this->jobClass, [
+            'request' => $request,
+            'config' => $this->jobConfig,
+        ]);
         if(!$model){
             throw new \Exception('Failure create model');
         }
@@ -60,8 +67,7 @@ class StoreFeature extends Feature
             $resourceClass = $this->resourceClass;
             return new $resourceClass($model);
         } else {
-            ModelResource::setFields($this->resourceFields);
-            return new ModelResource($model);
+            return new ModelResource($model, $this->resourceFields);
         }
     }
 }

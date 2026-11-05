@@ -285,11 +285,13 @@ class CrudController extends Controller
         }
 
         if ($this->hasStoreAction && $this->storeAction) {
+            $jobConfig = null;
+
             if (!$this->storeAction->getJobClass()) {
                 if ($this->storeAction->getJobParams()) {
-                    StoreJob::setConfig(array_merge($this->storeAction->getJobParams(), [
+                    $jobConfig = array_merge($this->storeAction->getJobParams(), [
                         'hasPriority' => $this->hasMoveAction
-                    ]));
+                    ]);
                 }
                 $jobClass = StoreJob::class;
             } else {
@@ -303,14 +305,17 @@ class CrudController extends Controller
                 $this->fullResourceClass,
                 $this->fullResourceFields,
                 $this->cacheNamespace,
-                $this->storeAction->getEventClass()
+                $this->storeAction->getEventClass(),
+                $jobConfig,
             ];
         }
 
         if ($this->hasUpdateAction && $this->updateAction) {
+            $jobConfig = null;
+
             if (!$this->updateAction->getJobClass()) {
                 if ($this->updateAction->getJobParams()) {
-                    UpdateJob::setConfig($this->updateAction->getJobParams());
+                    $jobConfig = $this->updateAction->getJobParams();
                 }
                 $jobClass = UpdateJob::class;
             } else {
@@ -328,7 +333,8 @@ class CrudController extends Controller
                 $this->cacheNamespace,
                 $this->updateAction->getEventClass(),
                 $this->isAdmin,
-                $this->defaultQueryBuilder
+                $this->defaultQueryBuilder,
+                $jobConfig,
             ];
         }
 
@@ -354,11 +360,13 @@ class CrudController extends Controller
                     $action->getQueryBuilder() ? $action->getQueryBuilder() : $this->defaultQueryBuilder,
                 ];
             } else if ($action instanceof StoreAction) {
+                $jobConfig = null;
+
                 if (!$action->getJobClass()) {
                     if ($action->getJobParams()) {
-                        StoreJob::setConfig(array_merge($action->getJobParams(), [
+                        $jobConfig = array_merge($action->getJobParams(), [
                             'hasPriority' => $this->hasMoveAction
-                        ]));
+                        ]);
                     }
                     $jobClass = StoreJob::class;
                 } else {
@@ -372,17 +380,21 @@ class CrudController extends Controller
                     $this->fullResourceClass,
                     $this->fullResourceFields,
                     $this->cacheNamespace,
-                    $action->getEventClass()
+                    $action->getEventClass(),
+                    $jobConfig,
                 ];
             } else if ($action instanceof UpdateAction) {
+                $jobConfig = null;
 
+                // A custom update action with no explicit job class used to
+                // fall back to StoreJob, which inserts a new row instead of
+                // updating the addressed one. UpdateJob is the correct default,
+                // and it takes no hasPriority flag.
                 if (!$action->getJobClass()) {
                     if ($action->getJobParams()) {
-                        StoreJob::setConfig(array_merge($action->getJobParams(), [
-                            'hasPriority' => $this->hasMoveAction
-                        ]));
+                        $jobConfig = $action->getJobParams();
                     }
-                    $jobClass = StoreJob::class;
+                    $jobClass = UpdateJob::class;
                 } else {
                     $jobClass = $action->getJobClass();
                 }
@@ -399,7 +411,8 @@ class CrudController extends Controller
                     $this->cacheNamespace,
                     $action->getEventClass(),
                     $this->isAdmin,
-                    $this->defaultQueryBuilder
+                    $this->defaultQueryBuilder,
+                    $jobConfig,
                 ];
             }
         }

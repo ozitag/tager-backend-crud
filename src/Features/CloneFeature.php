@@ -58,8 +58,7 @@ class CloneFeature extends ModelFeature
                 'isAdmin' => $this->isAdmin,
             ]);
 
-            ModelResource::setFields($resourceFields);
-            return new ModelResource($model);
+            return new ModelResource($model, $resourceFields);
         }
     }
 }

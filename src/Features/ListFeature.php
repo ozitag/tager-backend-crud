@@ -135,25 +135,29 @@ class ListFeature extends Feature
         }
 
 
-        if($view && array_key_exists($view, $this->resourceFieldsByView)){
+        $resourceFields = null;
+
+        if ($view && array_key_exists($view, $this->resourceFieldsByView)) {
             $resourceFields = $this->run(GetModelResourceFieldsJob::class, [
                 'resourceFields' => $this->resourceFieldsByView[$view],
                 'isAdmin' => $this->isAdmin,
             ]);
-
-            ModelResource::setFields($resourceFields);
         } else if (!$this->resourceClassName) {
             $resourceFields = $this->run(GetModelResourceFieldsJob::class, [
                 'resourceFields' => $this->resourceFields,
                 'isAdmin' => $this->isAdmin,
             ]);
-
-            ModelResource::setFields($resourceFields);
         }
 
-        $items->transform(function ($item) {
+        $items->transform(function ($item) use ($resourceFields) {
             $class = $this->resourceClassName ?? ModelResource::class;
-            return (new $class($item));
+
+            // The generic resource takes its field map per instance. A custom
+            // resource class declares its own fields() and only accepts the
+            // model, so nothing extra is passed to it.
+            return $class === ModelResource::class
+                ? new $class($item, $resourceFields)
+                : new $class($item);
         });
 
         $meta = [];

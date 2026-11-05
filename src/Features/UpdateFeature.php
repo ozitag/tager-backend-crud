@@ -27,12 +27,16 @@ class UpdateFeature extends ModelFeature
 
     private bool $isAdmin;
 
+    private ?array $jobConfig;
+
     public function __construct($id, $getByidJobClass, EloquentRepository $repository,
         $requestClass, $jobClass, $resourceClass, $resourceFields, $cacheNamespace, $eventClass, $isAdmin,
-                                ?BuilderContract $builder = null
+                                ?BuilderContract $builder = null, ?array $jobConfig = null
     )
     {
         parent::__construct($id, $getByidJobClass, $repository, $builder);
+
+        $this->jobConfig = $jobConfig;
 
         $this->requestClass = $requestClass;
         $this->jobClass = $jobClass;
@@ -56,6 +60,7 @@ class UpdateFeature extends ModelFeature
         $model = $this->run($this->jobClass, [
             'model' => $this->model(),
             'request' => $request,
+            'config' => $this->jobConfig,
         ]);
 
         if ($this->cacheNamespace) {
@@ -76,8 +81,7 @@ class UpdateFeature extends ModelFeature
                 'isAdmin' => $this->isAdmin,
             ]);
 
-            ModelResource::setFields($resourceFields);
-            return new ModelResource($this->model());
+            return new ModelResource($this->model(), $resourceFields);
         }
     }
 }

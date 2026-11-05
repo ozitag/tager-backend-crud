@@ -12,22 +12,22 @@ class StoreJob extends BaseCreateUpdateJob
 
     protected function hasPriority(): bool
     {
-        return self::$config['hasPriority'] ?? false;
+        return $this->config()['hasPriority'] ?? false;
     }
 
     protected function getDefaultValues(): ?array
     {
-        return self::$config['defaultValues'] ?? [];
+        return $this->config()['defaultValues'] ?? [];
     }
 
     protected function getUrlAliasFieldGenerator(): ?array
     {
-        return self::$config['urlAliasGenerator'] ?? null;
+        return $this->config()['urlAliasGenerator'] ?? null;
     }
 
     protected function getUpdatedEventClass(): ?string
     {
-        return self::$config['updateEventClass'] ?? null;
+        return $this->config()['updateEventClass'] ?? null;
     }
 
     protected function getUrlAliasValue(string $field, string $nameField): ?string
@@ -66,6 +66,15 @@ class StoreJob extends BaseCreateUpdateJob
                 $data[$field] = call_user_func($requestField, $this->request);
             } else {
                 $parts = explode(':', $requestField);
+
+                // A mapped field that the payload does not carry is left out of
+                // the INSERT entirely. Writing an explicit NULL here used to
+                // override the column's database default and break NOT NULL
+                // columns. A key present with a null value is still written.
+                if (!$this->request->has($parts[0])) {
+                    continue;
+                }
+
                 $data[$field] = $this->request[$parts[0]];
 
                 if (count($parts) == 2) {
@@ -102,8 +111,8 @@ class StoreJob extends BaseCreateUpdateJob
 
         $model = $this->repository()->fillAndSave($data);
 
-        if (isset(self::$config['afterSaveJob'])) {
-            $model = $this->run(self::$config['afterSaveJob'], [
+        if (isset($this->config()['afterSaveJob'])) {
+            $model = $this->run($this->config()['afterSaveJob'], [
                 'model' => $model,
                 'request' => $this->request
             ]);

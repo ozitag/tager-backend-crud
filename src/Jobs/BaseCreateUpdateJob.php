@@ -10,7 +10,17 @@ use OZiTAG\Tager\Backend\Core\Repositories\EloquentRepository;
 
 abstract class BaseCreateUpdateJob extends Job
 {
+    /**
+     * Process-wide fallback configuration.
+     *
+     * Kept for backwards compatibility with modules that call setConfig()
+     * directly. First-party callers pass the configuration per instance via
+     * the constructor instead, so the static value does not leak between
+     * controllers inside a long-lived worker.
+     */
     protected static $config = [];
+
+    protected ?array $instanceConfig = null;
 
     public static function setConfig($config)
     {
@@ -18,12 +28,23 @@ abstract class BaseCreateUpdateJob extends Job
     }
 
     /**
+     * Configuration for this run: the per-instance value when one was passed,
+     * otherwise the static fallback.
+     */
+    protected function config(): array
+    {
+        return $this->instanceConfig ?? static::$config;
+    }
+
+    /**
      * @return EloquentRepository
      */
     protected function repository()
     {
-        if (isset(static::$config['repository'])) {
-            return static::$config['repository'];
+        $config = $this->config();
+
+        if (isset($config['repository'])) {
+            return $config['repository'];
         } else {
             throw new \Exception('Repository not found');
         }
@@ -34,8 +55,10 @@ abstract class BaseCreateUpdateJob extends Job
      */
     protected function fields()
     {
-        if (isset(static::$config['fields'])) {
-            $fields = static::$config['fields'];
+        $config = $this->config();
+
+        if (isset($config['fields'])) {
+            $fields = $config['fields'];
 
             $result = [];
             foreach ($fields as $field => $requestField) {
@@ -60,10 +83,12 @@ abstract class BaseCreateUpdateJob extends Job
      */
     protected $model;
 
-    public function __construct(FormRequest $request, $model = null)
+    public function __construct(FormRequest $request, $model = null, ?array $config = null)
     {
         $this->request = $request;
 
         $this->model = $model;
+
+        $this->instanceConfig = $config;
     }
 }

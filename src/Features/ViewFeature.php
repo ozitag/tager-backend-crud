@@ -35,7 +35,6 @@ class ViewFeature extends ModelFeature
             'isAdmin' => $this->isAdmin
         ]);
 
-        ModelResource::setFields($resourceFields);
-        return new ModelResource($this->model());
+        return new ModelResource($this->model(), $resourceFields);
     }
 }
