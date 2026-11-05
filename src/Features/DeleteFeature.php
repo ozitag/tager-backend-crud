@@ -14,7 +14,7 @@ class DeleteFeature extends ModelFeature
 {
     public function __construct(int                $id,
                                 protected ?string  $jobGetByIdClass = null,
-                                EloquentRepository $repository,
+                                ?EloquentRepository $repository = null,
                                 protected mixed    $validator = null,
                                 protected ?string  $jobDeleteClass = null,
                                 protected ?string  $cacheNamespace = null,
